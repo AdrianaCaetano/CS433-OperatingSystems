@@ -1,2 +1,2 @@
-# CS433OS
-Repository for programming assignments - CS 433 Operating Systems
+# CS433 - Operating Systems
+Repository for programming assignments
