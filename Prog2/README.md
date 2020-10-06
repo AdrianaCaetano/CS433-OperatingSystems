@@ -27,8 +27,8 @@ program.
 ## Attention:
 
 Always check for potential errors of system calls in your code, which might lead to creating an
-infinite number of processes. For example, execvp() may fail if the command is unknown, which
-should result in an error message “command not found”. Monitor your processes and make sure
+infinite number of processes. For example, `execvp()` may fail if the command is unknown, which
+should result in an error message `“command not found”`. Monitor your processes and make sure
 all processes are terminated appropriately. We don't want to have hundreds of processes use up
 all the computer resources.
 
