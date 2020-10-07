@@ -14,9 +14,10 @@
 
 #define MAX_LINE 80 /* The max length command */
 
+using namespace support;
+
 int main(void) {
-        Support s;
-        s.show_header();
+        show_header();
 
         char* input;
         char** command[MAX_LINE / 2 + 1]; /* command line arguments */
