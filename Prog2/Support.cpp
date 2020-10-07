@@ -13,7 +13,7 @@
 #include "Support.h"
 
 // Show header with basic information about this program
-void Support::show_header() {
+void support::show_header() {
         std::cout << std::endl;
         std::cout << "======================================================================" << std::endl << std::endl;
         std::cout << "CS 433 Programming assignment 2" << std::endl;
@@ -26,7 +26,7 @@ void Support::show_header() {
 
 // Take a string as input to pase it
 // @return command array
-char** Support::get_input(char *input) {
+char** support::get_input(char *input) {
         char** command = malloc(8 *sizeof(char*));
         char* separator = " ";
         char* parsed;
