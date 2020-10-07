@@ -20,11 +20,23 @@ int main(void) {
         show_header();
 
         char* input;
-        char** command[MAX_LINE / 2 + 1]; /* command line arguments */
+        char** cmd[MAX_LINE / 2 + 1]; /* command line arguments */
         pid_t child_pid;
-        int should_run = 1; /* flag to determine when to exit the program */
+        int should_run; /* flag to determine when to exit the program */
 
-        while (should_run) {
+	do {
+
+		printf("osh>>");
+		input = get_input();
+		cmd = split_command(input);
+		should_run = execute(cmd);
+
+		free(input);
+		free(cmd);
+	} while (should_run);
+
+
+/*       while (should_run) {
                 printf("osh> ");
                 fflush(stdout);
 
@@ -46,10 +58,9 @@ int main(void) {
                         if (cmd does not end with &) {
                                 wait();
                 }
-        */
-
-                should_run = 0;
         }
+*/
+
 
         std::cout << "---------- End of Program ----------" <<std::endl;
 

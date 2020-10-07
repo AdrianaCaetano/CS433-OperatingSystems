@@ -16,7 +16,12 @@ namespace support {
 
         // Take a string as input and parse it
         // @return array of commands
-        char **get_input(char *input);
+        char **get_input();
+	
+	char[]** split_command(char* input);
+		
+	int execute(cmd);
+
 }
 
 #endif

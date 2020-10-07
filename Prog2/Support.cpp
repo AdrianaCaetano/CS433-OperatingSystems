@@ -26,17 +26,19 @@ void support::show_header() {
 
 // Take a string as input to pase it
 // @return command array
-char** support::get_input(char *input) {
-        char** command = malloc(8 *sizeof(char*));
+char* support::get_input(void) {
+        char** command;
         char* separator = " ";
         char* parsed;
         int index = 0;
 
         //Test if you could allocate memmory for command
         if (command == NULL) {
-                perror("malloc failed")'
+                perror("malloc failed");
                 exit(1);
         }
+
+	//Check if command line is empty
 
         parsed = strtok(input, separator);
         while (parsed != NULL) {
@@ -49,3 +51,11 @@ char** support::get_input(char *input) {
         command[index] = NULL;
         return command;
 }
+
+
+
+	
+	char[]** split_command(char* input);
+		
+	int execute(cmd);
+

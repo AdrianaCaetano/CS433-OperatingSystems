@@ -15,21 +15,21 @@ OBJ = $(SRCS:.cpp=.o)           # object files for the target. Add more to this 
 all : $(PROG) depend
 
 $(PROG): $(OBJ)
-        $(CC) -o $(PROG) $(OBJ) $(LDFLAGS) $(LIB)
+	$(CC) -o $(PROG) $(OBJ) $(LDFLAGS) $(LIB)
 
-.cpp.o:
-        $(CC) -c $(CFLAGS) $< -o $@
+.cpp.o:$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 depend: .depend
 
 .depend: $(SRCS)
-        rm -f ./.depend
-        $(CC) $(CFLAGS) -MM $^ > ./.depend;
+	rm -f ./.depend
+	$(CC) $(CFLAGS) -MM $^ > ./.depend;
 
 include .depend
 
 # cleanup
 clean:
-        /bin/rm -f *.o $(PROG) .depend
+	/bin/rm -f *.o $(PROG) .depend
 
 # DO NOT DELETE
