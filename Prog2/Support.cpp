@@ -49,8 +49,3 @@ char** Support::get_input(char *input) {
         command[index] = NULL;
         return command;
 }
-
-
-~
-~
-"Support.cpp" 53L, 1443C                                      26,0-1 
