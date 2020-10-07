@@ -20,9 +20,12 @@ int main(void) {
         show_header();
 
         char* input;
-        char** cmd[MAX_LINE / 2 + 1]; /* command line arguments */
+        char* cmd; /* command line arguments */
         pid_t child_pid;
         int should_run; /* flag to determine when to exit the program */
+
+	std::cout << "This program simulates a shell.\n" 
+		  << "Please input your command." << std::endl;
 
 	do {
 
