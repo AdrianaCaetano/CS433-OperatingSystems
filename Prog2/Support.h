@@ -9,9 +9,7 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
-class Support {
-
-        public:
+namespace support {
 
         // Show header with basic information about this program
         void show_header();
@@ -19,6 +17,6 @@ class Support {
         // Take a string as input and parse it
         // @return array of commands
         char **get_input(char *input);
-};
+}
 
 #endif
