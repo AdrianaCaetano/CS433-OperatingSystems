@@ -18,7 +18,7 @@ namespace support {
         char* get_input();
 	
 	// Parse the input to get commands
-	char** split_command(char* input);
+//	char** split_command(char* input);
 	
 	// Execute command in a child process
 	bool execute(char* cmd);

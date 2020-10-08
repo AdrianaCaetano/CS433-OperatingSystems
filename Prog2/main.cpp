@@ -9,10 +9,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
+#include <typeinfo>
 
 #include "Support.h"
 
-#define MAX_CMD 10 /* The max number of commands */
 #define MAX_LINE 80 /* The max length command */
 
 using namespace support;
@@ -20,12 +20,17 @@ using namespace support;
 int main(void) {
 
         char* input;
-        char** cmd; /* command line arguments */
+        char** cmd[MAX_LINE/2 + 1]; /* command line arguments */
 	bool should_run = true; /* flag to determine when to exit the program */
 
         show_header();
 	std::cout << "This program simulates a shell.\n" ;
 	std::cout << "Please input your command.\n" << std::endl;
+		
+	std::cout << "input type: " << typeid(input).name();
+	printf("\n");
+	std::cout << "cmd type: " << (typeid(cmd).name();
+	printf("\n\n");
 
 	do {
 

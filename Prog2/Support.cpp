@@ -12,11 +12,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <typeinfo>
 #include <unistd.h>
 
 #include "Support.h"
 
-#define MAX_CMD 10 /* The max number of commands */
 #define MAX_LINE 80 /* The max length command */
 
 using namespace std;
@@ -56,22 +56,26 @@ char* support::get_input(void) {
 
 	return input;
 }
-
+/*
 // Split the instruction into commands/arguments 	
 char** split_command(char* input) {
-	char** cmd; // malloc(MAX_CMD * sizeof(**cmd));
+	char** cmd[MAX_LINE/2 +1];
 	char* temp;
 	int num_cmd = 0;
 	
 	do {
   		temp = strtok(input, " \t\r\a\n");
-	 	cmd[num_cmd++] = temp;
-	} while (temp != NULL && num_cmd < MAX_CMD);
+		printf(typeid(temp).name());
+//	 	cmd[num_cmd] = temp;
+		num_cmd++;
+	} while (temp != NULL);
+	
+	cmd[num_cmd] = NULL;
 
         return cmd;
 }
 
-
+*/
 		
 /*********************************************************** 
  * PART II
