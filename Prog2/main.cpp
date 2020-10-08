@@ -29,7 +29,7 @@ int main(void) {
 
 	std::cout << "input type: " << typeid(input).name();
 	printf("\n");
-	std::cout << "cmd type: " << (typeid(cmd).name();
+	std::cout << "cmd type: " << (typeid(cmd).name());
 	printf("\n\n");
 
 	do {
