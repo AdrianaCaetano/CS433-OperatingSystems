@@ -26,7 +26,7 @@ int main(void) {
         show_header();
 	std::cout << "This program simulates a shell.\n" ;
 	std::cout << "Please input your command.\n" << std::endl;
-		
+
 	std::cout << "input type: " << typeid(input).name();
 	printf("\n");
 	std::cout << "cmd type: " << (typeid(cmd).name();

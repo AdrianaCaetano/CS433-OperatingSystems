@@ -33,7 +33,7 @@ void support::show_header() {
         cout << "======================================================================" << endl << endl;
 }
 
-/********************************** 
+/**********************************
  * PART I
  * In the new created Unix Shell
  * Read the User Input
@@ -42,11 +42,11 @@ void support::show_header() {
 // Read the instruction
 char* support::get_input(void) {
         char*  input = NULL;
-	size_t inputSize;	
+	size_t inputSize;
 
-	do { 
+	do {
 		inputSize = getline(&input, &inputSize, stdin);
-        		
+
 		//Test if command is empty
 	        if (inputSize == -1 && inputSize < MAX_LINE) {
 			printf("Error reading input.\n");
@@ -57,33 +57,33 @@ char* support::get_input(void) {
 	return input;
 }
 /*
-// Split the instruction into commands/arguments 	
+// Split the instruction into commands/arguments
 char** split_command(char* input) {
 	char** cmd[MAX_LINE/2 +1];
 	char* temp;
 	int num_cmd = 0;
-	
+
 	do {
   		temp = strtok(input, " \t\r\a\n");
 		printf(typeid(temp).name());
 //	 	cmd[num_cmd] = temp;
 		num_cmd++;
 	} while (temp != NULL);
-	
+
 	cmd[num_cmd] = NULL;
 
         return cmd;
 }
 
 */
-		
-/*********************************************************** 
+
+/***********************************************************
  * PART II
  * Executing the command in a child process
  * (1) fork a child process using fork()
  * (2) the child process will invoke execvp()
  * (3) parent will invoke wait() unless command included &
-*************************************************************/	
+*************************************************************/
 
 // Execute command in a child process
 bool execute(char** cmd) {
@@ -98,7 +98,7 @@ bool execute(char** cmd) {
 			printf("\nExecution failed.\n");
 			run = false;
 		} else {
-/*		
+/*
                 	if (cmd == exit) { exit() };
 			save cmd to history
 			execvp (cmd, args);
@@ -139,6 +139,3 @@ bool execute(char** cmd) {
  *****************************************************************/
 
 // TODO
-
-
-
