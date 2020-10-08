@@ -10,9 +10,14 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "Support.h"
 
+#define MAX_CMD 10 /* The max number of commands */
+#define MAX_LINE 80 /* The max length command */
 
 using namespace std;
 
@@ -28,39 +33,108 @@ void support::show_header() {
         cout << "======================================================================" << endl << endl;
 }
 
-// Take a string as input to pase it
-// @return command array
+/********************************** 
+ * PART I
+ * In the new created Unix Shell
+ * Read the User Input
+ **********************************/
+
+// Read the instruction
 char* support::get_input(void) {
-        string*  input;
-	
+        char*  input = NULL;
+	size_t inputSize;	
+
 	do { 
-        	//Test if command is empty
-		cin >> input;
-	        cout << "No input detected. Please input again.\n";
+		inputSize = getline(&input, &inputSize, stdin);
+        		
+		//Test if command is empty
+	        if (inputSize == -1 && inputSize < MAX_LINE) {
+			printf("Error reading input.\n");
+		}
 
         } while (input == NULL);
 
-	return *input;
+	return input;
 }
 
+// Split the instruction into commands/arguments 	
+char** split_command(char* input) {
+	char** cmd; // malloc(MAX_CMD * sizeof(**cmd));
+	char* temp;
+	int num_cmd = 0;
 	
-string* split_command(string* input) {
-	vector <string>* cmd;	
-        string* parsed;
-        int index = 0;
-  
-        parsed = strtok(input, " ");
-        while (parsed != NULL) {
-                cmd.push_back(*parsed);
-                index++;
+	do {
+  		temp = strtok(input, " \t\r\a\n");
+	 	cmd[num_cmd++] = temp;
+	} while (temp != NULL && num_cmd < MAX_CMD);
 
-                parsed = strtok(NULL, " ");
-        }
-
-        cmd[index] = NULL; // last element is null
         return cmd;
 }
+
+
 		
-	int execute(char* cmd) {
+/*********************************************************** 
+ * PART II
+ * Executing the command in a child process
+ * (1) fork a child process using fork()
+ * (2) the child process will invoke execvp()
+ * (3) parent will invoke wait() unless command included &
+*************************************************************/	
+
+// Execute command in a child process
+bool execute(char** cmd) {
+	pid_t pid = fork();
+	bool run = true;
+
+	if (pid < 0) {
+		printf("\nFork failed.\n");
+		run = false;
+	} else if (pid == 0) {
+		if (cmd[0] == NULL) {
+			printf("\nExecution failed.\n");
+			run = false;
+		} else {
+/*		
+                	if (cmd == exit) { exit() };
+			save cmd to history
+			execvp (cmd, args);
+                	if (cmd does not end with &) {
+                		wait();
+                	}
+*/		}
+	}
+	return run;
 }
+
+
+
+/****************************************************
+ * PART III
+ * Creating a history feature
+ * Execute the most recent command by entering !!
+ ****************************************************/
+
+// TODO
+
+
+
+/***************************************
+ * PART IV
+ * Redirecting Input and Output
+ * Support < and > redirect commands
+ ***************************************/
+
+// TODO
+
+
+
+/*****************************************************************
+ * PART V
+ * Communication via a Pipe
+ * Send the output of one command as the input to another command
+ *****************************************************************/
+
+// TODO
+
+
 

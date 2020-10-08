@@ -14,13 +14,14 @@ namespace support {
         // Show header with basic information about this program
         void show_header();
 
-        // Take a string as input and parse it
-        // @return array of commands
+        // Take a string as input
         char* get_input();
 	
-	char* split_command(char* input);
-		
-	int execute(char* cmd);
+	// Parse the input to get commands
+	char** split_command(char* input);
+	
+	// Execute command in a child process
+	bool execute(char* cmd);
 
 }
 
