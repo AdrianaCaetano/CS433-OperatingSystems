@@ -54,8 +54,7 @@ char* support::get_input(void) {
 
 
 
-	
-	char[]** split_command(char* input);
-		
-	int execute(cmd);
 
+	char[]** split_command(char* input);
+
+	int execute(cmd);
