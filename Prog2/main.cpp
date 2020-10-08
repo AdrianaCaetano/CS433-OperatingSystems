@@ -31,8 +31,8 @@ int main(void) {
 		cmd = split_command(input);
 		should_run = execute(cmd);
 
-		free(input);
-		free(cmd);
+		//free(input);
+		//free(cmd);
 	} while (should_run);
 
 
