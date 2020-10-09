@@ -116,32 +116,30 @@ int support::execute(char** cmd, bool concurrent) {
 	//fork a child process
 	pid_t pid = fork();
 	int status;
-
-	if (pid < 0) {
-		// error occurred
-		printf("\nERROR: Fork failed.\n");
+	
+	if (pid < 0 ) { // fork failed
+		printf("Error: Forked failed\n");
 		exit(1);
-	} 
-	else if (pid == 0) { // child process
-		//test command execution
+	} else if (pid == 0) {
+		// Child process
 		if (execvp(*cmd, cmd) < 0) {
-			printf("\nERROR: Execution failed.\n");
+			printf("Error: Execution failed\n");
 			exit(1);
-		} 
-	} 
-	else {	// parent process
-		if (!concurrent) {
-		 	printf("Parent waits for child process to finish\n");
-		 	pid = wait(&status);
+		}
+	} else { 
+		// Parent process
+		if (!concurrent) { 
+			// Wait for child process to end
+			while(wait(&status) != pid);
 		}
 	}
 	return 0;
 }
+	
 
 
 
-/****************************************************
- * PART III
+/* PART III
  * Creating a history feature
  * Execute the most recent command by entering !!
  ****************************************************/
