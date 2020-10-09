@@ -6,9 +6,9 @@
  * File: main.cpp
  */
 
+#include <cstring>
 #include <iostream>
 #include <stdio.h>
-#include <string>
 #include <unistd.h>
 #include <typeinfo>
 
@@ -21,8 +21,8 @@ using namespace support;
 
 int main(void) {
 
-        char* input;
-        char** cmd[MAX_LINE/2 + 1]; /* command line arguments */
+        char input[MAX_LINE];
+        char* commands[MAX_LINE/2 + 1]; /* command line arguments */
 	int should_run = 1; /* flag to determine when to exit the program */
 
         show_header();
@@ -35,12 +35,10 @@ int main(void) {
 		fflush(stdout);
 
                 // parse command line. Get command, args, redirect
-		input = get_input();
-		cmd = split_command(*input);
-		should_run = execute_command(cmd);
+		get_input(input);
+		split_command(input, commands);
+		should_run = execute_command(commands);
 
-		free(input);
-		free(cmd);
 
 	} while (should_run);
 

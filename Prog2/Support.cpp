@@ -7,6 +7,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
@@ -39,39 +40,32 @@ void support::show_header() {
  **********************************/
 
 // Read the instruction
-char support::get_input(void) {
-        char* input;
-	size_t inputSize;
+void support::get_input(char* input) {
 
 	do {
-		inputSize = getline(&input, &inputSize, stdin);
+		fgets(input, MAX_LINE, stdin);
 
 		//Test if command is empty
-	        if (inputSize < 0) {
+	        if (input== NULL) {
 			printf("Error reading input.\n");
 		}
 
         } while (input == NULL);
 
-	return input;
 }
 
 // Split the instruction into commands/arguments
-char** split_command(char* input) {
-	char** cmd[MAX_LINE/2 +1]; 
+void support::split_command(char* input, char** cmd) {
 	char* temp;
 	int num_cmd = 0;
 
 	do {
-  		temp = strtok(input, " \t\r\a\n");
-//		printf(typeid(temp).name());
-	 	cmd[num_cmd] = temp;
+		temp = strtok(input, " \t\r\a\n");
+		cmd[num_cmd] = temp;
 		num_cmd++;
 	} while (temp != NULL);
-
+	
 	cmd[num_cmd] = NULL;
-
-        return cmd;
 }
 
 
@@ -84,36 +78,44 @@ char** split_command(char* input) {
 *************************************************************/
 
 // Check command before creating a new process
-int execute_command(char** cmd) {
+int support::execute_command(char** cmd) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 
-	if (strcmp(cmd[0], "exit") { 
+	if (strcmp(cmd[0], "exit") == 0) { 
+		printf("Exit\n");
 		run = 0;
 		exit(0);
 	}
-	if (strcpm(cmd[0], "!!") {
-		// run last command 
-		cmd = get_history();
+	if (strcmp(cmd[0], "!!") == 0) {
+		printf("Execute previous command\n");
+		
 	} 
 
-	for (auto i = 0; i < cmd.length(); i++) {
-		if (strcpm(cmd[i], "&") { 
-			// parent runs concurrently  
+	for (auto i = 0; i < sizeof(cmd); i++) {
+		if (strcmp(cmd[i],  "&") == 0) { 
+			printf("Parent runs concurrently\n");  
 			concurrent = true;
 		}
-		if (strcpm(cmd[i], "|") {
-			// create pipe 
+		if (strcmp(cmd[i], "|") == 0) {
+			printf("Create pipe\n"); 
+		}
+		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], ">>") == 0) {
+			printf("Output redirection\n");
+		} 
+		if (strcmp(cmd[i], "<") == 0 || strcmp(cmd[i], "<<") == 0) { 
+			printf("Input redirection\n"); 
 		}
  	}
-	run = execute(*cmd, concurrent);
+	run = support::execute(cmd, concurrent);
 	return run;  
 }
 
 // Execute command in a child process
-int execute(char** cmd, bool concurrent) {
+int support::execute(char** cmd, bool concurrent) {
 	//fork a child process
 	pid_t pid = fork();
+	int status;
 
 	if (pid < 0) {
 		// error occurred
@@ -126,10 +128,11 @@ int execute(char** cmd, bool concurrent) {
 			printf("\nERROR: Execution failed.\n");
 			exit(1);
 		} 
+	} 
 	else {	// parent process
 		if (!concurrent) {
-		 	//parent waits for child process to finish
-		 	wait(NULL);
+		 	printf("Parent waits for child process to finish\n");
+		 	pid = wait(&status);
 		}
 	}
 	return 0;

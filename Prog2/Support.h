@@ -15,13 +15,13 @@ namespace support {
         void show_header();
 
         // Take a string as input
-        char* get_input();
+        void get_input(char*);
 	
 	// Parse the input to get commands
-	char** split_command(char* input);
+	void split_command(char*, char**);
 	
 	// Check command to execute
-	int execute_command(char** cmd);
+	int execute_command(char**);
 	
 	// Execute command in a child process
 	int execute(char** cmd, bool concurrent);
