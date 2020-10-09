@@ -6,6 +6,7 @@
  * File: Support.cpp
  */
 
+#include <cstdio>
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
@@ -22,14 +23,13 @@ using namespace std;
 
 // Show header with basic information about this program
 void support::show_header() {
-        cout << endl;
-        cout << "======================================================================" << std::endl << endl;
-        cout << "CS 433 Programming assignment 2" << endl;
-        cout << "Author: Adriana Caetano and Ryan Pisuena" << endl;
-        cout << "Date: 10/14/2020" << endl;
-        cout << "Course: CS433 (Operating Systems)" << endl;
-        cout << "Description : Unix Shell and History Feature" << endl << endl;
-        cout << "======================================================================" << endl << endl;
+        cout << "\n======================================================================\n\n";
+        cout << "CS 433 Programming assignment 2\n";
+        cout << "Author: Adriana Caetano and Ryan Pisuena\n";
+        cout << "Date: 10/14/2020\n";
+        cout << "Course: CS433 (Operating Systems)\n";
+        cout << "Description : Unix Shell and History Feature\n";
+        cout << "\n======================================================================\n\n";
 }
 
 /**********************************
@@ -39,15 +39,15 @@ void support::show_header() {
  **********************************/
 
 // Read the instruction
-char* support::get_input(void) {
-        char*  input = NULL;
+char support::get_input(void) {
+        char* input;
 	size_t inputSize;
 
 	do {
 		inputSize = getline(&input, &inputSize, stdin);
 
 		//Test if command is empty
-	        if (inputSize == -1 && inputSize < MAX_LINE) {
+	        if (inputSize < 0) {
 			printf("Error reading input.\n");
 		}
 
@@ -55,17 +55,17 @@ char* support::get_input(void) {
 
 	return input;
 }
-/*
+
 // Split the instruction into commands/arguments
 char** split_command(char* input) {
-	char** cmd[MAX_LINE/2 +1];
+	char** cmd[MAX_LINE/2 +1]; 
 	char* temp;
 	int num_cmd = 0;
 
 	do {
   		temp = strtok(input, " \t\r\a\n");
-		printf(typeid(temp).name());
-//	 	cmd[num_cmd] = temp;
+//		printf(typeid(temp).name());
+	 	cmd[num_cmd] = temp;
 		num_cmd++;
 	} while (temp != NULL);
 
@@ -74,7 +74,6 @@ char** split_command(char* input) {
         return cmd;
 }
 
-*/
 
 /***********************************************************
  * PART II
@@ -84,29 +83,56 @@ char** split_command(char* input) {
  * (3) parent will invoke wait() unless command included &
 *************************************************************/
 
+// Check command before creating a new process
+int execute_command(char** cmd) {
+	bool concurrent = false; // flag for parent process wait for child process
+	int run = 1; // flag if it should continue running
+
+	if (strcmp(cmd[0], "exit") { 
+		run = 0;
+		exit(0);
+	}
+	if (strcpm(cmd[0], "!!") {
+		// run last command 
+		cmd = get_history();
+	} 
+
+	for (auto i = 0; i < cmd.length(); i++) {
+		if (strcpm(cmd[i], "&") { 
+			// parent runs concurrently  
+			concurrent = true;
+		}
+		if (strcpm(cmd[i], "|") {
+			// create pipe 
+		}
+ 	}
+	run = execute(*cmd, concurrent);
+	return run;  
+}
+
 // Execute command in a child process
-bool execute(char** cmd) {
+int execute(char** cmd, bool concurrent) {
+	//fork a child process
 	pid_t pid = fork();
-	bool run = true;
 
 	if (pid < 0) {
-		printf("\nFork failed.\n");
-		run = false;
-	} else if (pid == 0) {
-		if (cmd[0] == NULL) {
-			printf("\nExecution failed.\n");
-			run = false;
-		} else {
-/*
-                	if (cmd == exit) { exit() };
-			save cmd to history
-			execvp (cmd, args);
-                	if (cmd does not end with &) {
-                		wait();
-                	}
-*/		}
+		// error occurred
+		printf("\nERROR: Fork failed.\n");
+		exit(1);
+	} 
+	else if (pid == 0) { // child process
+		//test command execution
+		if (execvp(*cmd, cmd) < 0) {
+			printf("\nERROR: Execution failed.\n");
+			exit(1);
+		} 
+	else {	// parent process
+		if (!concurrent) {
+		 	//parent waits for child process to finish
+		 	wait(NULL);
+		}
 	}
-	return run;
+	return 0;
 }
 
 

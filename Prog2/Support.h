@@ -18,10 +18,13 @@ namespace support {
         char* get_input();
 	
 	// Parse the input to get commands
-//	char** split_command(char* input);
+	char** split_command(char* input);
+	
+	// Check command to execute
+	int execute_command(char** cmd);
 	
 	// Execute command in a child process
-	bool execute(char* cmd);
+	int execute(char** cmd, bool concurrent);
 
 }
 

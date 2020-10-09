@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string>
 #include <unistd.h>
 #include <typeinfo>
 
@@ -15,22 +16,18 @@
 
 #define MAX_LINE 80 /* The max length command */
 
+using namespace std;
 using namespace support;
 
 int main(void) {
 
         char* input;
         char** cmd[MAX_LINE/2 + 1]; /* command line arguments */
-	bool should_run = true; /* flag to determine when to exit the program */
+	int should_run = 1; /* flag to determine when to exit the program */
 
         show_header();
-	std::cout << "This program simulates a shell.\n" ;
-	std::cout << "Please input your command.\n" << std::endl;
-
-	std::cout << "input type: " << typeid(input).name();
-	printf("\n");
-	std::cout << "cmd type: " << (typeid(cmd).name());
-	printf("\n\n");
+	cout << "This program simulates a shell.\n" ;
+	cout << "Please input your command.\n\n";
 
 	do {
 
@@ -39,15 +36,15 @@ int main(void) {
 
                 // parse command line. Get command, args, redirect
 		input = get_input();
-//		cmd = split_command(input);
-//		should_run = execute(cmd);
+		cmd = split_command(*input);
+		should_run = execute_command(cmd);
 
 		free(input);
 		free(cmd);
 
 	} while (should_run);
 
-        std::cout << "---------- End of Program ----------" <<std::endl;
+        cout << "---------- End of Program ----------\n";
 
         return 0;
 }
