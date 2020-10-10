@@ -11,7 +11,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-#include <typeinfo>
 
 #include "Support.h"
 
@@ -26,7 +25,7 @@ int main(void) {
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
 	char* last_cmd[MAX_LINE/2 + 1]; /* hold history command */
 	int num_args = 0; 		/* hold number of command arguments */
-	int should_run = 1; 		/* flag to determine when to exit the program */
+	int should_run = 1; /* flag to determine when to exit the program */
 
         show_header();
 	cout << "This program simulates a shell.\n" ;
@@ -35,14 +34,14 @@ int main(void) {
 	while(should_run) {
 		printf("osh->");
 		fflush(stdout);
-		
-		// get input from the user
-		fgets(input, MAX_LINE, stdin);
 
+		// get input
+		fgets(input, MAX_LINE, stdin);
+		
 		// parse command
 		num_args = split_command(input, commands);
 		
-		//execute command
+		// execute command
 		should_run = execute_command(commands, num_args);
 	}
 
@@ -50,3 +49,4 @@ int main(void) {
 
         return 0;
 }
+	

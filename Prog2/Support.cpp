@@ -6,11 +6,10 @@
  * File: Support.cpp
  */
 
-#include <cstdio> 	// fgets(), stdin
-#include <cstring> 	// strcmp(), strtok()
-#include <iostream> 	// exit(), cout
-#include <sys/wait.h> 	// wait()
-#include <unistd.h> 	// fork(), execvp()
+#include <cstring>	//strcmp(), strtok()
+#include <iostream>	// exit(), cout
+#include <sys/wait.h>	// wait()
+#include <unistd.h>	// fork(), execvp()
 
 #include "Support.h"
 
@@ -40,7 +39,7 @@ int support::split_command(char* input, char** cmd) {
 	char* temp;
 	int num_cmd = 0;
 
-	if (!input) { return num_cmd; }
+	if (!input) { return num_cmd; } 
 	
 	temp = strtok(input, " \t\r\a\n");
 	while (temp != NULL) {
@@ -50,7 +49,8 @@ int support::split_command(char* input, char** cmd) {
 	}
 	cmd[num_cmd] = NULL; // last element is null
 	return num_cmd;
-} 
+	
+} // end of split_command
 
 
 /***********************************************************
@@ -78,27 +78,33 @@ int support::execute_command(char** cmd, int num_arg) {
 		printf("Execute previous command\n");
 		//cmd = previous
 	}
-
-	int i = 0; //iterator 
-
+	int i = 0 ; // iterator
 	while (i < num_arg) {
 
 		if (strcmp(cmd[i], "&") == 0 ) { 
 			printf("Parent runs concurrently\n");  
+<<<<<<< HEAD
 			concurrent = true; 	// change flag
 			cmd[i] = NULL;		// delete & character from command
 		}	
+=======
+			concurrent = true;  	// change flaf
+			cmd[i] = NULL; 		// delete & character from command
+		}
+>>>>>>> 396d71a878cca5f350913fe6472d3afd16bed129
 
 		if (strcmp(cmd[i], "|") == 0) {
 			printf("Create pipe\n"); 
 		}
+		
 		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], ">>") == 0) {
 			printf("Output redirection\n");
-		} 
+		}
+		
 		if (strcmp(cmd[i], "<") == 0 || strcmp(cmd[i], "<<") == 0) { 
 			printf("Input redirection\n"); 
 		}
-		i++;
+		i++;	// increment iterator
  	}
 
 	run = support::execute(cmd, concurrent);
@@ -107,7 +113,7 @@ int support::execute_command(char** cmd, int num_arg) {
 
 // Execute command in a child process
 int support::execute(char** cmd, bool concurrent) {
-//	cout << "inside execute\n"; // DELETE
+	cout << "inside execute\n"; // DELETE
 	//fork a child process
 	pid_t pid = fork();
 	int status;
@@ -119,22 +125,20 @@ int support::execute(char** cmd, bool concurrent) {
 	} 
 	else if (pid == 0) {
 		// Child process 
-//		cout << "child process\n"; // DELETE
 		if (execvp(*cmd, cmd) < 0) {
-			printf("Error: Execution failed, command not known\n");
+			printf("Error: Execution failed, command not found\n");
 			exit(1);
 		}
 	} 
 	else { 
 		// Parent process
-//		cout << "parent process\n";  // DELETE
 		if (!concurrent) { 
 			// Wait for child process to end
 			while(wait(&status) != pid);
 		}
 	}
-	return 1;
-} // end of execute
+	return 0;
+}
 	
 
 
