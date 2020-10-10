@@ -34,10 +34,14 @@ int main(void) {
 	while(should_run) {
 		printf("osh->");
 		fflush(stdout);
+		
+		// get input from the user
+		fgets(input, MAX_LINE, stdin);
 
-		// get and parse command
+		// parse command
 		split_command(input, commands);
-	
+		
+		//execute command
 		should_run = execute_command(commands);
 	}
 
