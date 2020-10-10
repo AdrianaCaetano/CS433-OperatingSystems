@@ -11,7 +11,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-#include <typeinfo>
 
 #include "Support.h"
 
@@ -25,6 +24,7 @@ int main(void) {
         char input[MAX_LINE];
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
 	char* last_cmd[MAX_LINE/2 + 1]; /* hold history command */
+	int num_args = 0; 		/* hold number of command arguments */
 	int should_run = 1; /* flag to determine when to exit the program */
 
         show_header();
@@ -35,40 +35,18 @@ int main(void) {
 		printf("osh->");
 		fflush(stdout);
 
-                // get command
+		// get input
 		fgets(input, MAX_LINE, stdin);
-	//	printf("\n");
 		
 		// parse command
-		split_command(input, commands);
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-		if (strcmp(commands[0], "exit") == 0 ) { 
-			exit(0); 
-		}
+		num_args = split_command(input, commands);
 		
-		// DELETE
-		for (auto i = 0; i < sizeof(commands) ; i++ ) { 
-			printf("%s", commands[i]);
-		}
-	
-	//	should_run = execute_command(commands);
-
-
-=======
-		
-		//execute command
-		should_run = execute_command(commands);
->>>>>>> parent of c1d0daa... included num_args
-=======
-		
-		//execute command
-		should_run = execute_command(commands);
->>>>>>> parent of c1d0daa... included num_args
+		// execute command
+		should_run = execute_command(commands, num_args);
 	}
 
         cout << "---------- End of Program ----------\n";
 
         return 0;
 }
+	
