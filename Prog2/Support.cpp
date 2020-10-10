@@ -48,6 +48,7 @@ int support::split_command(char* input, char** cmd) {
 		num_cmd++;
 		temp = strtok(NULL, " \t\r\a\n");
 	}
+	cmd[num_cmd] = NULL; // last element is null
 	return num_cmd;
 } 
 
@@ -62,7 +63,6 @@ int support::split_command(char* input, char** cmd) {
 
 // Check command before creating a new process
 int support::execute_command(char** cmd, int num_arg) {
-//	cout << "inside execute_command\n";    // DELETE
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 
@@ -85,11 +85,8 @@ int support::execute_command(char** cmd, int num_arg) {
 
 		if (strcmp(cmd[i], "&") == 0 ) { 
 			printf("Parent runs concurrently\n");  
-			concurrent = true;
-			// copy cmd without & character
-			for (int j = 0; j < i; j++) {
-	//			cmd
-			}
+			concurrent = true; 	// change flag
+			cmd[i] = NULL;		// delete & character from command
 		}	
 
 		if (strcmp(cmd[i], "|") == 0) {
