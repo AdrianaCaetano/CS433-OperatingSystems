@@ -9,7 +9,15 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
+#include <vector>
+#include <string>
 namespace support {
+
+        // vector<string> history;
+        // void showHistory();
+        // void saveIntoHistory();
+        // void showLastHistory();       
+
 
         // Show header with basic information about this program
         void show_header();

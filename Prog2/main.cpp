@@ -12,6 +12,7 @@
 
 #include "Support.h"
 
+
 #define MAX_LINE 80 /* The max length command */
 
 using namespace support;
@@ -19,7 +20,7 @@ using namespace support;
 int main(void) {
         show_header();
 
-        char* input;
+        char** input;
         char** cmd[MAX_LINE / 2 + 1]; /* command line arguments */
         pid_t child_pid;
         int should_run; /* flag to determine when to exit the program */
@@ -28,8 +29,8 @@ int main(void) {
 
 		printf("osh>>");
 		input = get_input();
-		cmd = split_command(input);
-		should_run = execute(cmd);
+		cmd = split_command(*input); // pointer to input
+		should_run = execute(*cmd); // pointer to cmd
 
 		//free(input);
 		//free(cmd);
@@ -50,6 +51,7 @@ int main(void) {
                  * (2) the child process will invoke execvp()
                  * (3) parent will invoke wait() unless command included &
                  */
+
          /*
                 p = fork();
                 if (p == 0) {

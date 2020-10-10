@@ -105,7 +105,8 @@ bool execute(char** cmd) {
                 	if (cmd does not end with &) {
                 		wait();
                 	}
-*/		}
+*/
+		}
 	}
 	return run;
 }
@@ -119,7 +120,37 @@ bool execute(char** cmd) {
  ****************************************************/
 
 // TODO
+/*
+vector<string> history; // Need to have this somewhere
 
+void showHistory()
+{
+
+for(int i = 0; i < history.size(); i++)
+{
+cout << i +1 << " " << history[i] << endl;
+}
+
+
+
+}
+
+void saveIntoHistory()
+{
+  sting command = "";
+  for(int i = 0; i < sizeofCharArray; i++)
+  {
+  command += char[i]'
+  }
+ 
+  history.push_back(s);
+}
+        // void showLastHistory();
+
+
+
+
+ */
 
 
 /***************************************
