@@ -6,15 +6,10 @@
  * File: Support.cpp
  */
 
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <typeinfo>
-#include <unistd.h>
+#include <cstring>	//strcmp(), strtok()
+#include <iostream>	// exit(), cout
+#include <sys/wait.h>	// wait()
+#include <unistd.h>	// fork(), execvp()
 
 #include "Support.h"
 
@@ -39,76 +34,22 @@ void support::show_header() {
  * Read the User Input
  **********************************/
 
-// Read the instruction
-void support::get_input(char* input) {
-/*	cout << "inside get_input\n"; // DELETE
-	fgets(input, MAX_LINE, stdin);
-
-	//Test if command is empty
-	if (input== NULL) {
-		printf("Error reading input.\n");
-	}
-*/
-}
-
 // Split the instruction into commands/arguments
-void support::split_command(char* input, char** cmd) {	
+int support::split_command(char* input, char** cmd) {	
 	char* temp;
 	int num_cmd = 0;
-	cout << "inside split_command\n";   // DELETE
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	if (input != "" || input != NULL) { 
-	
-		temp = strtok(input, " \t\r\a\n");
-		while (temp != NULL) {
-			cmd[num_cmd] = temp;
-			num_cmd++;
-			temp = strtok(input, " \t\r\a\n");
-		}
-	}
-
-/*	while (*input != '\0') { // while not the end of the line
-		while (*input == ' ' || *input == '\t' || *input == '\n') {
-			*input++ = '\0'; //replace whitespaces
-		} 
-		*cmd++ = input; // save command
-		num_cmd++; 
-		while (*input != '\0' && *input != ' ' && 
-			*input != '\t' && *input != '\n') {
-			input++;
-		}
-	}
-	*cmd = '\0'; //end of commands
-*/
-// DELETE
-	if (num_cmd > 0) {
-		for (auto i = 0 ; i < num_cmd ; i++) {
-			cout << cmd[i];
-		}
-		cout << endl;
-	}	
-=======
-=======
->>>>>>> parent of c1d0daa... included num_args
-	if (!input) { return; }
+	if (!input) { return num_cmd; } 
 	
 	temp = strtok(input, " \t\r\a\n");
 	while (temp != NULL) {
-		cout << num_cmd << " temp = " << temp << endl;  // DELETE
 		cmd[num_cmd] = temp;
 		num_cmd++;
 		temp = strtok(NULL, " \t\r\a\n");
 	}
-
-	cout << "Command size: " << num_cmd << endl;
-
-
-<<<<<<< HEAD
->>>>>>> parent of c1d0daa... included num_args
-=======
->>>>>>> parent of c1d0daa... included num_args
+	cmd[num_cmd] = NULL; // last element is null
+	return num_cmd;
+	
 } // end of split_command
 
 
@@ -121,73 +62,48 @@ void support::split_command(char* input, char** cmd) {
 *************************************************************/
 
 // Check command before creating a new process
-int support::execute_command(char** cmd) {
-	cout << "inside execute_command\n";    // DELETE
+int support::execute_command(char** cmd, int num_arg) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 
 	if (cmd == NULL) { exit(0); }
 
 	if (strcmp(cmd[0], "exit") == 0) { 
-		printf("Exit\n");
+		printf("Good bye!\n");
 		run = 0;
-		exit(0);
+		return run;
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
 		//cmd = previous
 	}
-	if (strcmp(cmd[sizeof(cmd)-1], "&") == 0 ) { 
-		printf("Parent runs concurrently\n");  
-		concurrent = true;
-	}
+	int i = 0 ; // iterator
+	while (i < num_arg) {
 
-=======
-
-=======
-
-
-/*	int i = 0; //iterator 
-
-	while (cmd[i] != NULL) {
-
-		if (strcmp(cmd[i], "!!") == 0) {
-			printf("Execute previous command\n");
-			//cmd = previous
-		}
->>>>>>> parent of c1d0daa... included num_args
-
-/*	int i = 0; //iterator 
-
-	while (cmd[i] != NULL) {
-
-		if (strcmp(cmd[i], "!!") == 0) {
-			printf("Execute previous command\n");
-			//cmd = previous
-		}
->>>>>>> parent of c1d0daa... included num_args
-
-/*	for (auto i = 0; i < sizeof(cmd); i++) {
-		if (strcmp(cmd[i],  "&") == 0) { 
+		if (strcmp(cmd[i], "&") == 0 ) { 
 			printf("Parent runs concurrently\n");  
-			concurrent = true;
+			concurrent = true;  	// change flaf
+			cmd[i] = NULL; 		// delete & character from command
 		}
+
 		if (strcmp(cmd[i], "|") == 0) {
 			printf("Create pipe\n"); 
 		}
+		
 		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], ">>") == 0) {
 			printf("Output redirection\n");
-		} 
+		}
+		
 		if (strcmp(cmd[i], "<") == 0 || strcmp(cmd[i], "<<") == 0) { 
 			printf("Input redirection\n"); 
 		}
+		i++;	// increment iterator
  	}
-*/
+
 	run = support::execute(cmd, concurrent);
 	return run;  
-}
+} // end of execute_command
 
 // Execute command in a child process
 int support::execute(char** cmd, bool concurrent) {
@@ -202,30 +118,14 @@ int support::execute(char** cmd, bool concurrent) {
 		exit(1);
 	} 
 	else if (pid == 0) {
-<<<<<<< HEAD
-		// Child process
-=======
 		// Child process 
-		cout << "child process\n"; // DELETE
-<<<<<<< HEAD
->>>>>>> parent of c1d0daa... included num_args
-=======
->>>>>>> parent of c1d0daa... included num_args
 		if (execvp(*cmd, cmd) < 0) {
-			printf("Error: Execution failed\n");
+			printf("Error: Execution failed, command not found\n");
 			exit(1);
 		}
 	} 
 	else { 
 		// Parent process
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-		cout << "parent process\n";  // DELETE
->>>>>>> parent of c1d0daa... included num_args
-=======
-		cout << "parent process\n";  // DELETE
->>>>>>> parent of c1d0daa... included num_args
 		if (!concurrent) { 
 			// Wait for child process to end
 			while(wait(&status) != pid);
