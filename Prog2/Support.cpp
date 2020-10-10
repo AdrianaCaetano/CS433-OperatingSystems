@@ -58,6 +58,7 @@ void support::split_command(char* input, char** cmd) {
 	cout << "inside split_command\n";   // DELETE
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (input != "" || input != NULL) { 
 	
 		temp = strtok(input, " \t\r\a\n");
@@ -89,6 +90,8 @@ void support::split_command(char* input, char** cmd) {
 		cout << endl;
 	}	
 =======
+=======
+>>>>>>> parent of c1d0daa... included num_args
 	if (!input) { return; }
 	
 	temp = strtok(input, " \t\r\a\n");
@@ -102,6 +105,9 @@ void support::split_command(char* input, char** cmd) {
 	cout << "Command size: " << num_cmd << endl;
 
 
+<<<<<<< HEAD
+>>>>>>> parent of c1d0daa... included num_args
+=======
 >>>>>>> parent of c1d0daa... included num_args
 } // end of split_command
 
@@ -128,6 +134,7 @@ int support::execute_command(char** cmd) {
 		exit(0);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
 		//cmd = previous
@@ -139,6 +146,18 @@ int support::execute_command(char** cmd) {
 
 =======
 
+=======
+
+
+/*	int i = 0; //iterator 
+
+	while (cmd[i] != NULL) {
+
+		if (strcmp(cmd[i], "!!") == 0) {
+			printf("Execute previous command\n");
+			//cmd = previous
+		}
+>>>>>>> parent of c1d0daa... included num_args
 
 /*	int i = 0; //iterator 
 
@@ -188,6 +207,9 @@ int support::execute(char** cmd, bool concurrent) {
 =======
 		// Child process 
 		cout << "child process\n"; // DELETE
+<<<<<<< HEAD
+>>>>>>> parent of c1d0daa... included num_args
+=======
 >>>>>>> parent of c1d0daa... included num_args
 		if (execvp(*cmd, cmd) < 0) {
 			printf("Error: Execution failed\n");
@@ -197,6 +219,10 @@ int support::execute(char** cmd, bool concurrent) {
 	else { 
 		// Parent process
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		cout << "parent process\n";  // DELETE
+>>>>>>> parent of c1d0daa... included num_args
 =======
 		cout << "parent process\n";  // DELETE
 >>>>>>> parent of c1d0daa... included num_args

@@ -42,6 +42,7 @@ int main(void) {
 		// parse command
 		split_command(input, commands);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		if (strcmp(commands[0], "exit") == 0 ) { 
 			exit(0); 
@@ -55,6 +56,11 @@ int main(void) {
 	//	should_run = execute_command(commands);
 
 
+=======
+		
+		//execute command
+		should_run = execute_command(commands);
+>>>>>>> parent of c1d0daa... included num_args
 =======
 		
 		//execute command
