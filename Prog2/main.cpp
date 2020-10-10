@@ -25,7 +25,8 @@ int main(void) {
         char input[MAX_LINE];
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
 	char* last_cmd[MAX_LINE/2 + 1]; /* hold history command */
-	int should_run = 1; /* flag to determine when to exit the program */
+	int num_args = 0; 		/* hold number of command arguments */
+	int should_run = 1; 		/* flag to determine when to exit the program */
 
         show_header();
 	cout << "This program simulates a shell.\n" ;
@@ -39,10 +40,10 @@ int main(void) {
 		fgets(input, MAX_LINE, stdin);
 
 		// parse command
-		split_command(input, commands);
+		num_args = split_command(input, commands);
 		
 		//execute command
-		should_run = execute_command(commands);
+		should_run = execute_command(commands, num_args);
 	}
 
         cout << "---------- End of Program ----------\n";
