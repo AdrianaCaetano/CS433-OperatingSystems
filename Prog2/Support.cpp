@@ -78,20 +78,15 @@ int support::execute_command(char** cmd, int num_arg) {
 		printf("Execute previous command\n");
 		//cmd = previous
 	}
+
 	int i = 0 ; // iterator
 	while (i < num_arg) {
 
 		if (strcmp(cmd[i], "&") == 0 ) { 
 			printf("Parent runs concurrently\n");  
-<<<<<<< HEAD
-			concurrent = true; 	// change flag
-			cmd[i] = NULL;		// delete & character from command
-		}	
-=======
 			concurrent = true;  	// change flaf
 			cmd[i] = NULL; 		// delete & character from command
 		}
->>>>>>> 396d71a878cca5f350913fe6472d3afd16bed129
 
 		if (strcmp(cmd[i], "|") == 0) {
 			printf("Create pipe\n"); 
@@ -142,8 +137,8 @@ int support::execute(char** cmd, bool concurrent) {
 	
 
 
-
-/* PART III
+/****************************************************
+ * PART III
  * Creating a history feature
  * Execute the most recent command by entering !!
  ****************************************************/
