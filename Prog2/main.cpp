@@ -22,12 +22,13 @@ using namespace support;
 
 int main(void) {
 
-        char input[MAX_LINE];
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
+  char input[MAX_LINE];
+  char* commands[MAX_LINE/2 + 1]; /* command line arguments */
 	char* last_cmd[MAX_LINE/2 + 1]; /* hold history command */
 	int should_run = 1; /* flag to determine when to exit the program */
 
-        show_header();
+  show_header();
 	cout << "This program simulates a shell.\n" ;
 	cout << "Please input your command.\n\n";
 
@@ -38,19 +39,19 @@ int main(void) {
                 // get command
 		fgets(input, MAX_LINE, stdin);
 	//	printf("\n");
-		
+
 		// parse command
 		split_command(input, commands);
 
-		if (strcmp(commands[0], "exit") == 0 ) { 
-			exit(0); 
+		if (strcmp(commands[0], "exit") == 0 ) {
+			exit(0);
 		}
-		
+
 		// DELETE
-		for (auto i = 0; i < sizeof(commands) ; i++ ) { 
+		for (auto i = 0; i < sizeof(commands) ; i++ ) {
 			printf("%s", commands[i]);
 		}
-	
+
 	//	should_run = execute_command(commands);
 
 
