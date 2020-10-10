@@ -41,32 +41,53 @@ void support::show_header() {
 
 // Read the instruction
 void support::get_input(char* input) {
+/*	cout << "inside get_input\n"; // DELETE
+	fgets(input, MAX_LINE, stdin);
 
-	do {
-		fgets(input, MAX_LINE, stdin);
-
-		//Test if command is empty
-	        if (input== NULL) {
-			printf("Error reading input.\n");
-		}
-
-        } while (input == NULL);
-
+	//Test if command is empty
+	if (input== NULL) {
+		printf("Error reading input.\n");
+	}
+*/
 }
 
 // Split the instruction into commands/arguments
-void support::split_command(char* input, char** cmd) {
+void support::split_command(char* input, char** cmd) {	
 	char* temp;
 	int num_cmd = 0;
+	cout << "inside split_command\n";   // DELETE
 
-	do {
-		temp = strtok(input, " \t\r\a\n");
-		cmd[num_cmd] = temp;
-		num_cmd++;
-	} while (temp != NULL);
+	if (input != "" || input != NULL) { 
 	
-	cmd[num_cmd] = NULL;
-}
+		temp = strtok(input, " \t\r\a\n");
+		while (temp != NULL) {
+			cmd[num_cmd] = temp;
+			num_cmd++;
+			temp = strtok(input, " \t\r\a\n");
+		}
+	}
+
+/*	while (*input != '\0') { // while not the end of the line
+		while (*input == ' ' || *input == '\t' || *input == '\n') {
+			*input++ = '\0'; //replace whitespaces
+		} 
+		*cmd++ = input; // save command
+		num_cmd++; 
+		while (*input != '\0' && *input != ' ' && 
+			*input != '\t' && *input != '\n') {
+			input++;
+		}
+	}
+	*cmd = '\0'; //end of commands
+*/
+// DELETE
+	if (num_cmd > 0) {
+		for (auto i = 0 ; i < num_cmd ; i++) {
+			cout << cmd[i];
+		}
+		cout << endl;
+	}	
+} // end of split_command
 
 
 /***********************************************************
@@ -79,8 +100,11 @@ void support::split_command(char* input, char** cmd) {
 
 // Check command before creating a new process
 int support::execute_command(char** cmd) {
+	cout << "inside execute_command\n";    // DELETE
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
+
+	if (cmd == NULL) { exit(0); }
 
 	if (strcmp(cmd[0], "exit") == 0) { 
 		printf("Exit\n");
@@ -89,10 +113,15 @@ int support::execute_command(char** cmd) {
 	}
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
-		
-	} 
+		//cmd = previous
+	}
+	if (strcmp(cmd[sizeof(cmd)-1], "&") == 0 ) { 
+		printf("Parent runs concurrently\n");  
+		concurrent = true;
+	}
 
-	for (auto i = 0; i < sizeof(cmd); i++) {
+
+/*	for (auto i = 0; i < sizeof(cmd); i++) {
 		if (strcmp(cmd[i],  "&") == 0) { 
 			printf("Parent runs concurrently\n");  
 			concurrent = true;
@@ -107,26 +136,31 @@ int support::execute_command(char** cmd) {
 			printf("Input redirection\n"); 
 		}
  	}
+*/
 	run = support::execute(cmd, concurrent);
 	return run;  
 }
 
 // Execute command in a child process
 int support::execute(char** cmd, bool concurrent) {
+	cout << "inside execute\n"; // DELETE
 	//fork a child process
 	pid_t pid = fork();
 	int status;
 	
-	if (pid < 0 ) { // fork failed
+	if (pid < 0 ) { 
+		// fork failed
 		printf("Error: Forked failed\n");
 		exit(1);
-	} else if (pid == 0) {
+	} 
+	else if (pid == 0) {
 		// Child process
 		if (execvp(*cmd, cmd) < 0) {
 			printf("Error: Execution failed\n");
 			exit(1);
 		}
-	} else { 
+	} 
+	else { 
 		// Parent process
 		if (!concurrent) { 
 			// Wait for child process to end
