@@ -1,0 +1,2 @@
+main.o: main.cpp Support.h
+Support.o: Support.cpp Support.h
