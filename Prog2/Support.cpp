@@ -41,6 +41,7 @@ void support::show_header() {
 
 // Split the instruction into commands/arguments
 void support::split_command(char* input, char** cmd) {	
+<<<<<<< HEAD
 	char* temp;
 	int num_cmd = 0;
 //	cout << "inside split_command\n";   // DELETE
@@ -57,6 +58,49 @@ void support::split_command(char* input, char** cmd) {
 		temp = strtok(NULL, " \t\r\a\n");
 	}
 
+=======
+  char* temp;
+  int num_cmd = 0;
+  cout << "inside split_command\n";   // DELETE
+  
+  if (input != "" || input != NULL) {
+    
+    cout << "Inside for loop" << endl; // error checking
+    
+    int i = 0; // error checking
+    temp = strtok(input, " \t\r\a\n");
+    while (temp != NULL) {
+      cout << "Checking for errors in while loop" << endl; // error checking
+      cout << i << endl; // error checking
+      i++; // error checking
+      cmd[num_cmd] = temp;
+      cout << temp << endl;
+      num_cmd++;
+      temp = strtok(input, " \t\r\a\n");
+    }
+  }
+  
+  /*	while (*input != '\0') { // while not the end of the line
+	while (*input == ' ' || *input == '\t' || *input == '\n') {
+	*input++ = '\0'; //replace whitespaces
+	} 
+	*cmd++ = input; // save command
+	num_cmd++; 
+	while (*input != '\0' && *input != ' ' && 
+	*input != '\t' && *input != '\n') {
+	input++;
+	}
+	}
+	*cmd = '\0'; //end of commands
+	*/
+  // DELETE
+  if (num_cmd > 0) {
+    for (auto i = 0 ; i < num_cmd ; i++) {
+      cout << cmd[i];
+    }
+    cout << endl;
+  }	
+>>>>>>> a9ce5a339675dcd10d1bb6a53e412003eb13f0f0
 } // end of split_command
 
 
