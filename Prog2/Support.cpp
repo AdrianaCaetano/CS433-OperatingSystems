@@ -57,6 +57,7 @@ void support::split_command(char* input, char** cmd) {
 	int num_cmd = 0;
 	cout << "inside split_command\n";   // DELETE
 
+<<<<<<< HEAD
 	if (input != "" || input != NULL) { 
 	
 		temp = strtok(input, " \t\r\a\n");
@@ -87,6 +88,21 @@ void support::split_command(char* input, char** cmd) {
 		}
 		cout << endl;
 	}	
+=======
+	if (!input) { return; }
+	
+	temp = strtok(input, " \t\r\a\n");
+	while (temp != NULL) {
+		cout << num_cmd << " temp = " << temp << endl;  // DELETE
+		cmd[num_cmd] = temp;
+		num_cmd++;
+		temp = strtok(NULL, " \t\r\a\n");
+	}
+
+	cout << "Command size: " << num_cmd << endl;
+
+
+>>>>>>> parent of c1d0daa... included num_args
 } // end of split_command
 
 
@@ -111,6 +127,7 @@ int support::execute_command(char** cmd) {
 		run = 0;
 		exit(0);
 	}
+<<<<<<< HEAD
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
 		//cmd = previous
@@ -120,6 +137,18 @@ int support::execute_command(char** cmd) {
 		concurrent = true;
 	}
 
+=======
+
+
+/*	int i = 0; //iterator 
+
+	while (cmd[i] != NULL) {
+
+		if (strcmp(cmd[i], "!!") == 0) {
+			printf("Execute previous command\n");
+			//cmd = previous
+		}
+>>>>>>> parent of c1d0daa... included num_args
 
 /*	for (auto i = 0; i < sizeof(cmd); i++) {
 		if (strcmp(cmd[i],  "&") == 0) { 
@@ -154,7 +183,12 @@ int support::execute(char** cmd, bool concurrent) {
 		exit(1);
 	} 
 	else if (pid == 0) {
+<<<<<<< HEAD
 		// Child process
+=======
+		// Child process 
+		cout << "child process\n"; // DELETE
+>>>>>>> parent of c1d0daa... included num_args
 		if (execvp(*cmd, cmd) < 0) {
 			printf("Error: Execution failed\n");
 			exit(1);
@@ -162,6 +196,10 @@ int support::execute(char** cmd, bool concurrent) {
 	} 
 	else { 
 		// Parent process
+<<<<<<< HEAD
+=======
+		cout << "parent process\n";  // DELETE
+>>>>>>> parent of c1d0daa... included num_args
 		if (!concurrent) { 
 			// Wait for child process to end
 			while(wait(&status) != pid);
