@@ -35,25 +35,10 @@ int main(void) {
 		printf("osh->");
 		fflush(stdout);
 
-                // get command
-		fgets(input, MAX_LINE, stdin);
-	//	printf("\n");
-		
-		// parse command
+		// get and parse command
 		split_command(input, commands);
-
-		if (strcmp(commands[0], "exit") == 0 ) { 
-			exit(0); 
-		}
-		
-		// DELETE
-		for (auto i = 0; i < sizeof(commands) ; i++ ) { 
-			printf("%s", commands[i]);
-		}
 	
-	//	should_run = execute_command(commands);
-
-
+		should_run = execute_command(commands);
 	}
 
         cout << "---------- End of Program ----------\n";

@@ -14,9 +14,6 @@ namespace support {
         // Show header with basic information about this program
         void show_header();
 
-        // Take a string as input
-        void get_input(char*);
-	
 	// Parse the input to get commands
 	void split_command(char*, char**);
 	
