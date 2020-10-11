@@ -81,6 +81,10 @@ int support::execute_command(char** cmd, int num_arg) {
 	}
 
 	int i = 0 ; // iterator
+	int separator; // hold position of command separator 
+	char* cmd1[MAX_LINE/4 + 1]; // first command up to separator
+	char* cmd2[MAX_LINE/4 + 1]; // second command after separator
+
 	while (i < num_arg) {
 
 		if (strcmp(cmd[i], "&") == 0 ) { // Parent runs concurrently  
@@ -89,16 +93,9 @@ int support::execute_command(char** cmd, int num_arg) {
 		}
 
 		if (strcmp(cmd[i], "|") == 0) {// Create pipe
-			// Separate the 2 commands
-			char** cmd1; // first command up to |
-			char** cmd2; // second command after |
-			for (int j = 0; j < i; j++) { 
-				cmd1[j] = cmd[j];
-			}
-			for (int j = i + 1; j < num_arg; j++) { 
-				cmd2[j] = cmd[j];
-			}
- 			
+			separator = i; // position of |
+			support::separate_commands(cmd, num_arg, separator, cmd1, cmd2);
+
 			if ((cmd1 != NULL) && (cmd2 != NULL)) {
 				// Create the pipe
 				support::pipe_cmd(cmd1, cmd2);
@@ -110,10 +107,14 @@ int support::execute_command(char** cmd, int num_arg) {
 		
 		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], ">>") == 0) {
 			printf("Output redirection\n");
+			separator = i; // position of >
+			support::separate_commands(cmd, num_arg, separator, cmd1, cmd2);
 		}
 		
 		if (strcmp(cmd[i], "<") == 0 || strcmp(cmd[i], "<<") == 0) { 
 			printf("Input redirection\n"); 
+			separator = i; // position of <
+			support::separate_commands(cmd, num_arg, separator, cmd1, cmd2);
 		}
 		i++;	// increment iterator
  	}
@@ -151,6 +152,23 @@ int support::execute(char** cmd, bool concurrent) {
 	return 1;
 }
 	
+// Separate commands before and after the separator character
+void support::separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2) {
+
+	for (int j = 0; j < separator; j++) { 
+		cmd1[j] = cmd[j];
+	}
+
+	int index = 0;
+	for (int j = separator + 1; j < num_arg; j++) { 
+		cmd2[index] = cmd[j];
+		index++;
+	}
+	
+	cmd1[separator] = NULL; // last element is null
+	cmd2[index] = NULL; 	// last element is null
+}
+
 
 
 /****************************************************
