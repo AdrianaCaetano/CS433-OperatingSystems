@@ -44,6 +44,13 @@ namespace support {
 
   // Returns the last command used
   char** return_last_command(char history[41][100]);
+  
+  // Redirect file to be the command input
+  int redirect_input(char** cmd1, char** file, bool concurrent);
+
+  // Redirect command output to a file
+  int redirect_output(char** cmd1, char** file, bool concurrent);
+	
   // Create a pipe and send output of cmd1 to input of cmd2
   void pipe_cmd(char** cmd1, char** cmd2);
   
