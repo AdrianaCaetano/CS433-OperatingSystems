@@ -9,7 +9,15 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
+#include <vector>
+#include <string>
 namespace support {
+
+        // vector<string> history;
+        // void showHistory();
+        // void saveIntoHistory();
+        // void showLastHistory();       
+
 
         // Show header with basic information about this program
         void show_header();
@@ -22,6 +30,7 @@ namespace support {
 	
 	// Execute command in a child process
 	int execute(char** cmd, bool concurrent);
+
 
 	// Separate commands before and after the separator character
 	void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);

@@ -11,6 +11,7 @@
 #include <sys/wait.h>	// wait()
 #include <unistd.h>	// fork(), execvp()
 
+
 #include "Support.h"
 
 #define MAX_LINE 80 /* The max length command */
@@ -26,6 +27,7 @@ void support::show_header() {
         cout << "Course: CS433 (Operating Systems)\n";
         cout << "Description : Unix Shell and History Feature\n";
         cout << "\n======================================================================\n\n";
+
 }
 
 /**********************************
@@ -191,11 +193,13 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
 
 
 
+
 /*****************************************************************
  * PART V
  * Communication via a Pipe
  * Send the output of one command as the input to another command
  *****************************************************************/
+
 
 // Creates a pipe to send output of cmd 1 to input of cmd 2
 void support::pipe_cmd(char** cmd1, char** cmd2) {
@@ -242,3 +246,5 @@ void support::pipe_cmd(char** cmd1, char** cmd2) {
 	}
 }
 
+
+// TODO

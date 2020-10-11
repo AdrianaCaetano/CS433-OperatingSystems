@@ -10,12 +10,14 @@
 
 #include "Support.h"
 
+
 #define MAX_LINE 80 /* The max length command */
 
 using namespace std;
 using namespace support;
 
 int main(void) {
+
 
         char input[MAX_LINE];
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
@@ -30,6 +32,7 @@ int main(void) {
 	while(should_run) {
 		printf("osh->");
 		fflush(stdout);
+
 
 		// get input
 		fgets(input, MAX_LINE, stdin);
