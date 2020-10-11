@@ -17,9 +17,10 @@ command.
 
 Your program should implement I - IV parts of the project, namely:
 
-  1. Creating the child process and executing the command in the child
-  2. Providing a history feature
-  3. Adding support of input and output redirection
+  1. Simulating a Unix shell
+  2. Creating the child process and executing the command in the child
+  3. Providing a history feature
+  4. Adding support of input and output redirection
 
 You may earn extra credits by implementing “Part V. Communication via a Pipe” in your
 program.
