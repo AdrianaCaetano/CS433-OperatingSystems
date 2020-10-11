@@ -11,11 +11,15 @@
 #include <sys/wait.h>	// wait()
 #include <unistd.h>	// fork(), execvp()
 
+
 #include "Support.h"
 
 #define MAX_LINE 80 /* The max length command */
-
+#define BUFFER_SIZE 100 
 using namespace std;
+
+char support::last_cmd[41][BUFFER_SIZE]; /* hold history command */
+int support::last_command_size = 0;  /*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
@@ -26,6 +30,7 @@ void support::show_header() {
         cout << "Course: CS433 (Operating Systems)\n";
         cout << "Description : Unix Shell and History Feature\n";
         cout << "\n======================================================================\n\n";
+
 }
 
 /**********************************
@@ -73,6 +78,14 @@ int support::execute_command(char** cmd, int num_arg) {
 		run = 0; // change flag to stop running
 		return run;
 	}
+
+	if (strcmp(cmd[0], "history") == 0) {
+	  printf("Attempting to print history:\n");
+	  show_history(last_cmd, last_command_size);
+	  save_into_history(last_cmd, cmd, last_command_size);
+	  return run;
+        }
+
 
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
@@ -178,8 +191,61 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  ****************************************************/
 
 // TODO
+void support::show_history(char history[41][100], int size)
+  
+{
+  
+  int historyCount = size;
+  
+  if(historyCount == 0)
+    {
+      printf("%s ", "Empty history");
+      printf("\n");
+    }
+  else
+    {
+  for (int i = 0, j = 0; i<10;i++)
+    {
+      printf("%d.  ", historyCount);
+      while (history[i][j] != '\n' && history[i][j] != '\0')
+	{
+	  printf("%c", history[i][j]);
+	  j++;
+	}
+      printf("\n");
+      j = 0;
+      historyCount--;
+      if (historyCount ==  0)
+	{
+	  break;
+	}
+    }
+    } // end of else statement 
+}
 
+void support::save_into_history(char history[41][100], char** cmd, int size)
+{
+  for(int historyIndex = 40; historyIndex > 0; historyIndex--)
+    {
+      strcpy(history[historyIndex], history[historyIndex-1]);
+    }
 
+   //The lines below give a null-terminated const char* for every character
+   //string sym(1, **cmd);
+   //cmd = sym.c_str();
+
+  //strcpy(history[0], cmd);
+  //size++;
+}
+
+char** support::return_last_command(char history[41][100])
+{
+  //return *history[0].c_str();
+  //return history[0];
+
+  char** pointerChar;
+  return pointerChar;
+}
 
 /***************************************
  * PART IV
@@ -191,11 +257,13 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
 
 
 
+
 /*****************************************************************
  * PART V
  * Communication via a Pipe
  * Send the output of one command as the input to another command
  *****************************************************************/
+
 
 // Creates a pipe to send output of cmd 1 to input of cmd 2
 void support::pipe_cmd(char** cmd1, char** cmd2) {
@@ -231,7 +299,7 @@ void support::pipe_cmd(char** cmd1, char** cmd2) {
 		dup2( pipefd[1], 1) ;
 	
 		if (execvp(*cmd1, cmd1) < 0) { // ecevutes first command
-			printf("ERROR: Commad 1 execution failed\n");
+			printf("ERROR: Command 1 execution failed\n");
 		}
 		close( pipefd[1] ) ; 	// reader will see EOF	
 	} 
@@ -242,3 +310,5 @@ void support::pipe_cmd(char** cmd1, char** cmd2) {
 	}
 }
 
+
+// TODO
