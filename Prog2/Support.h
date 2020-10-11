@@ -23,6 +23,8 @@ namespace support {
 	// Execute command in a child process
 	int execute(char** cmd, bool concurrent);
 
-}
+	// Create a pipe and send output of cmd1 to input of cmd2
+	void pipe_cmd(char** cmd1, char** cmd2);
 
+}
 #endif

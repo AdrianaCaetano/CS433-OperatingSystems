@@ -70,26 +70,42 @@ int support::execute_command(char** cmd, int num_arg) {
 
 	if (strcmp(cmd[0], "exit") == 0) { 
 		printf("Good bye!\n");
-		run = 0;
+		run = 0; // change flag to stop running
 		return run;
 	}
 
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
 		//cmd = previous
+		run = support::execute(cmd, concurrent);
 	}
 
 	int i = 0 ; // iterator
 	while (i < num_arg) {
 
-		if (strcmp(cmd[i], "&") == 0 ) { 
-			printf("Parent runs concurrently\n");  
+		if (strcmp(cmd[i], "&") == 0 ) { // Parent runs concurrently  
 			concurrent = true;  	// change flaf
 			cmd[i] = NULL; 		// delete & character from command
 		}
 
-		if (strcmp(cmd[i], "|") == 0) {
-			printf("Create pipe\n"); 
+		if (strcmp(cmd[i], "|") == 0) {// Create pipe
+			// Separate the 2 commands
+			char** cmd1; // first command up to |
+			char** cmd2; // second command after |
+			for (int j = 0; j < i; j++) { 
+				cmd1[j] = cmd[j];
+			}
+			for (int j = i + 1; j < num_arg; j++) { 
+				cmd2[j] = cmd[j];
+			}
+ 			
+			if ((cmd1 != NULL) && (cmd2 != NULL)) {
+				// Create the pipe
+				support::pipe_cmd(cmd1, cmd2);
+			} else {
+				printf("Parsing commands failed\n");
+			}
+			return run;
 		}
 		
 		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], ">>") == 0) {
@@ -104,11 +120,11 @@ int support::execute_command(char** cmd, int num_arg) {
 
 	run = support::execute(cmd, concurrent);
 	return run;  
+
 } // end of execute_command
 
 // Execute command in a child process
 int support::execute(char** cmd, bool concurrent) {
-	cout << "inside execute\n"; // DELETE
 	//fork a child process
 	pid_t pid = fork();
 	int status;
@@ -132,7 +148,7 @@ int support::execute(char** cmd, bool concurrent) {
 			while(wait(&status) != pid);
 		}
 	}
-	return 0;
+	return 1;
 }
 	
 
@@ -163,4 +179,48 @@ int support::execute(char** cmd, bool concurrent) {
  * Send the output of one command as the input to another command
  *****************************************************************/
 
-// TODO
+// Creates a pipe to send output of cmd 1 to input of cmd 2
+void support::pipe_cmd(char** cmd1, char** cmd2) {
+	int pipefd[2]; 		// file descriptors
+	pid_t pid1 = fork(); 	// child 1
+	pid_t pid2 = fork(); 	//child 2
+
+	if (pipe(pipefd) == -1) {
+		printf("ERROR: Pipe failed\n");
+		return;
+	}
+
+	if ((pid1 < 0) || (pid2 < 0)) { 
+		printf("ERROR: Fork failed\n");
+		return;		
+	}
+
+	if (pid1  == 0) { 
+		sleep(0.1); // sleep for one milisecond to wait for process 2 to finish
+
+		// Child process 1 reads from pipe 
+		close( pipefd[1] ) ; 	// close unused write end
+		dup2( pipefd[0], 0) ;
+		
+		if (execvp(*cmd2, cmd2) < 0) { // executes second command
+			printf("Error: Command 2 execution failed\n");
+		}
+		close( pipefd[0] ) ;
+	} 
+	else if ( pid2 == 0) {
+		// Child process 2 writes to pipe
+		close( pipefd[0] ) ; 	// close unused read end
+		dup2( pipefd[1], 1) ;
+	
+		if (execvp(*cmd1, cmd1) < 0) { // ecevutes first command
+			printf("ERROR: Commad 1 execution failed\n");
+		}
+		close( pipefd[1] ) ; 	// reader will see EOF	
+	} 
+	else { 
+		// Parent process
+		waitpid(pid1, NULL, 0); 	// wait for child 1
+		waitpid(pid2, NULL, 0); 	// wait for child 2
+	}
+}
+

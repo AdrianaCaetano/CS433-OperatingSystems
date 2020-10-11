@@ -6,11 +6,7 @@
  * File: main.cpp
  */
 
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <stdio.h>
-#include <unistd.h>
+#include <cstdio>  	// printf(), fflush(), fgets()
 
 #include "Support.h"
 
@@ -28,8 +24,8 @@ int main(void) {
 	int should_run = 1; /* flag to determine when to exit the program */
 
         show_header();
-	cout << "This program simulates a shell.\n" ;
-	cout << "Please input your command.\n\n";
+	printf("This program simulates a shell.\n") ;
+	printf("Please input your command.\n\n") ;
 
 	while(should_run) {
 		printf("osh->");
@@ -45,8 +41,9 @@ int main(void) {
 		should_run = execute_command(commands, num_args);
 	}
 
-        cout << "---------- End of Program ----------\n";
+        printf("---------- End of Program ----------\n");
 
         return 0;
 }
+
 	
