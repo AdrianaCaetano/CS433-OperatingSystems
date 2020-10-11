@@ -7,7 +7,7 @@
  */
 
 #include <cstring>	//strcmp(), strtok()
-#include <iostream>	// exit(), cout
+ #include <iostream>	// exit(), cout
 #include <sys/wait.h>	// wait()
 #include <unistd.h>	// fork(), execvp()
 
@@ -19,7 +19,7 @@
 using namespace std;
 
 char support::last_cmd[41][BUFFER_SIZE]; /* hold history command */
-int support::last_command_size = 0;  /*Hold size of last command */
+int support::last_command_size;  /*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
@@ -45,14 +45,17 @@ int support::split_command(char* input, char** cmd) {
 	int num_cmd = 0;
 
 	if (!input) { return num_cmd; } 
-	
+	//save_into_history(last_cmd, *input[]);
+
 	temp = strtok(input, " \t\r\a\n");
 	while (temp != NULL) {
 		cmd[num_cmd] = temp;
+		//save_into_history(input[num_cmd]);
 		num_cmd++;
 		temp = strtok(NULL, " \t\r\a\n");
 	}
 	cmd[num_cmd] = NULL; // last element is null
+	save_into_history(*input);
 	return num_cmd;
 	
 } // end of split_command
@@ -81,8 +84,8 @@ int support::execute_command(char** cmd, int num_arg) {
 
 	if (strcmp(cmd[0], "history") == 0) {
 	  printf("Attempting to print history:\n");
-	  show_history(last_cmd, last_command_size);
-	  save_into_history(last_cmd, cmd, last_command_size);
+	  show_history();
+	  //save_into_history(last_cmd, cmd, last_command_size);
 	  return run;
         }
 
@@ -191,11 +194,11 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  ****************************************************/
 
 // TODO
-void support::show_history(char history[41][100], int size)
+void support::show_history()
   
 {
   
-  int historyCount = size;
+  int historyCount = last_command_size;
   
   if(historyCount == 0)
     {
@@ -204,12 +207,12 @@ void support::show_history(char history[41][100], int size)
     }
   else
     {
-  for (int i = 0, j = 0; i<10;i++)
+  for (int i = 0, j = 0; i<41;i++)
     {
       printf("%d.  ", historyCount);
-      while (history[i][j] != '\n' && history[i][j] != '\0')
+      while (support::last_cmd[i][j] != '\n' && support::last_cmd[i][j] != '\0')
 	{
-	  printf("%c", history[i][j]);
+	  printf("%c", support::last_cmd[i][j]);
 	  j++;
 	}
       printf("\n");
@@ -223,24 +226,24 @@ void support::show_history(char history[41][100], int size)
     } // end of else statement 
 }
 
-void support::save_into_history(char history[41][100], char** cmd, int size)
+void support::save_into_history(char cmd)
 {
   for(int historyIndex = 40; historyIndex > 0; historyIndex--)
     {
-      strcpy(history[historyIndex], history[historyIndex-1]);
+      strcpy(support::last_cmd[historyIndex], support::last_cmd[historyIndex-1]);
     }
-
-   //The lines below give a null-terminated const char* for every character
-   //string sym(1, **cmd);
-   //cmd = sym.c_str();
-
-  //strcpy(history[0], cmd);
-  //size++;
+  
+  //The lines below give a null-terminated const char* for every character
+  //string sym(1, cmd);
+  //cmd = sym.c_str();
+  
+  strcpy(&support::last_cmd[0][0], &cmd);
+  support::last_command_size++;
 }
 
 char** support::return_last_command(char history[41][100])
 {
-  //return *history[0].c_str();
+  //return &history[0];
   //return history[0];
 
   char** pointerChar;

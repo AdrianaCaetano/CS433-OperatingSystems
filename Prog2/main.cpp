@@ -40,6 +40,9 @@ int main(void) {
 		
 		// parse command
 		num_args = split_command(input, commands);
+
+		// save history
+		//save_into_history(*input);
 		
 		// execute command
 		should_run = execute_command(commands, num_args);

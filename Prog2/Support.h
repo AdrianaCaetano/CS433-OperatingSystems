@@ -37,10 +37,10 @@ namespace support {
   void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);
   
   // prints out the last 10 commands used 
-  void show_history(char history[41][100],  int size);
+  void show_history();
   
   // saves a used command into the history array
-  void save_into_history(char history[41][100], char** cmd, int size);
+  void save_into_history(char input);
 
   // Returns the last command used
   char** return_last_command(char history[41][100]);
