@@ -15,8 +15,11 @@
 #include "Support.h"
 
 #define MAX_LINE 80 /* The max length command */
-
+#define BUFFER_SIZE 100 
 using namespace std;
+
+char support::last_cmd[41][BUFFER_SIZE]; /* hold history command */
+int support::last_command_size = 0;  /*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
@@ -75,6 +78,13 @@ int support::execute_command(char** cmd, int num_arg) {
 		run = 0; // change flag to stop running
 		return run;
 	}
+
+	if (strcmp(cmd[0], "history") == 0) {
+	  printf("Attempting to print history:\n");
+	  show_history(last_cmd, last_command_size);
+	  return run;
+        }
+
 
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
@@ -180,7 +190,48 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  ****************************************************/
 
 // TODO
+void support::show_history(char history[41][100], int size)
+  
+{
+  
+  int historyCount = size;
+  
+  if(historyCount == 0)
+    {
+      printf("%s ", "Empty history");
+      printf("\n");
+    }
+  else
+    {
+  for (int i = 0, j = 0; i<10;i++)
+    {
+      printf("%d.  ", historyCount);
+      while (history[i][j] != '\n' && history[i][j] != '\0')
+	{
+	  printf("%c", history[i][j]);
+	  j++;
+	}
+      printf("\n");
+      j = 0;
+      historyCount--;
+      if (historyCount ==  0)
+	{
+	  break;
+	}
+    }
+    } // end of else statement 
+}
 
+void support::save_into_history(char history[41][100], char** cmd, int size)
+{
+  for(int historyIndex = 9; historyIndex > 0; historyIndex--)
+    {
+      strcpy(history[historyIndex], history[historyIndex-1]);
+    }
+
+  strcpy(history[0], cmd);
+  size++;
+}
 
 
 /***************************************
