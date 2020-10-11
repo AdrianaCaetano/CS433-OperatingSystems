@@ -42,6 +42,8 @@ namespace support {
   // saves a used command into the history array
   void save_into_history(char history[41][100], char** cmd, int size);
 
+  // Returns the last command used
+  char** return_last_command(char history[41][100]);
   // Create a pipe and send output of cmd1 to input of cmd2
   void pipe_cmd(char** cmd1, char** cmd2);
   

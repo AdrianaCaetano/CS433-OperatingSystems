@@ -21,8 +21,8 @@ int main(void) {
 
         char input[MAX_LINE];
         char* commands[MAX_LINE/2 + 1]; /* command line arguments */
-	char last_cmd[41][BUFFER_SIZE]; /* hold history command */
-	int last_command_size;  /*Hold size of last command */
+	//char last_cmd[41][BUFFER_SIZE]; /* hold history command */
+	//int last_command_size;  /*Hold size of last command */
 	int num_args = 0; 		/* hold number of command arguments */
 	int should_run = 1; /* flag to determine when to exit the program */
 

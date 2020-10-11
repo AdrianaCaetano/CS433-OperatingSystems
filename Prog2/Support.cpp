@@ -82,6 +82,7 @@ int support::execute_command(char** cmd, int num_arg) {
 	if (strcmp(cmd[0], "history") == 0) {
 	  printf("Attempting to print history:\n");
 	  show_history(last_cmd, last_command_size);
+	  save_into_history(last_cmd, cmd, last_command_size);
 	  return run;
         }
 
@@ -224,15 +225,27 @@ void support::show_history(char history[41][100], int size)
 
 void support::save_into_history(char history[41][100], char** cmd, int size)
 {
-  for(int historyIndex = 9; historyIndex > 0; historyIndex--)
+  for(int historyIndex = 40; historyIndex > 0; historyIndex--)
     {
       strcpy(history[historyIndex], history[historyIndex-1]);
     }
 
-  strcpy(history[0], cmd);
-  size++;
+   //The lines below give a null-terminated const char* for every character
+   //string sym(1, **cmd);
+   //cmd = sym.c_str();
+
+  //strcpy(history[0], cmd);
+  //size++;
 }
 
+char** support::return_last_command(char history[41][100])
+{
+  //return *history[0].c_str();
+  //return history[0];
+
+  char** pointerChar;
+  return pointerChar;
+}
 
 /***************************************
  * PART IV
@@ -286,7 +299,7 @@ void support::pipe_cmd(char** cmd1, char** cmd2) {
 		dup2( pipefd[1], 1) ;
 	
 		if (execvp(*cmd1, cmd1) < 0) { // ecevutes first command
-			printf("ERROR: Commad 1 execution failed\n");
+			printf("ERROR: Command 1 execution failed\n");
 		}
 		close( pipefd[1] ) ; 	// reader will see EOF	
 	} 
