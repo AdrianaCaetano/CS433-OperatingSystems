@@ -12,15 +12,14 @@
 #include <sys/wait.h>	// wait()
 #include <unistd.h>	// fork(), execvp()
 
-
 #include "Support.h"
 
-#define MAX_LINE 80 /* The max length command */
+#define MAX_LINE 80 		/* The max input length */
 #define BUFFER_SIZE 100 
 using namespace std;
 
-char support::last_cmd[41][BUFFER_SIZE]; /* hold history command */
-int support::last_command_size = 0;  /*Hold size of last command */
+char support::last_cmd[41][BUFFER_SIZE]; 	/* hold history command */
+int support::last_command_size = 0;		/*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
@@ -31,8 +30,8 @@ void support::show_header() {
         cout << "Course: CS433 (Operating Systems)\n";
         cout << "Description : Unix Shell and History Feature\n";
         cout << "\n======================================================================\n\n";
-
 }
+
 
 /**********************************
  * PART I
@@ -54,9 +53,8 @@ int support::split_command(char* input, char** cmd) {
 		temp = strtok(NULL, " \t\r\a\n");
 	}
 	cmd[num_cmd] = NULL; // last element is null
-	return num_cmd;
-	
-} // end of split_command
+	return num_cmd;	
+}
 
 
 /***********************************************************
@@ -72,7 +70,7 @@ int support::execute_command(char** cmd, int num_arg) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 
-	if (cmd == NULL) { exit(0); }
+	if (cmd == NULL) { return run; }
 
 	if (strcmp(cmd[0], "exit") == 0) { 
 		printf("Good bye!\n");
@@ -86,7 +84,6 @@ int support::execute_command(char** cmd, int num_arg) {
 //	  save_into_history(last_cmd, cmd, last_command_size);
 //	  return run;
         }
-
 
 	if (strcmp(cmd[0], "!!") == 0) {
 		printf("Execute previous command\n");
@@ -104,6 +101,8 @@ int support::execute_command(char** cmd, int num_arg) {
 			concurrent = true;  	// change flaf
 			cmd[i] = NULL; 		// delete & character from command
 			num_arg--;		// decrement num_arg after deleting &
+			run = support::execute(cmd, concurrent);
+			return run;
 		}
 
 		if (strcmp(cmd[i], "|") == 0) { // Create pipe
@@ -115,27 +114,13 @@ int support::execute_command(char** cmd, int num_arg) {
 			} else {
 				printf("ERROR: Parsing commands failed\n");
 			}
-		return run;
+			return run;
 		}
-		
+
 		if (strcmp(cmd[i], ">") == 0 || strcmp(cmd[i], "<") == 0) { // Redirection
 			separator = i; // position of > or <
-			support::separate_commands(cmd, num_arg, separator, cmd1, cmd2);
 
-			// cmd2 = file name				
-			if ((cmd1 != NULL) && (cmd2 != NULL)) {
-				if (strcmp(cmd[i], "<") == 0) { // Redirect input
-					run = support::redirect_input(cmd1, cmd2, concurrent);
-				} 
-				else if (strcmp(cmd[i], ">") == 0) { // Redirect output
-					run = support::redirect_output(cmd1, cmd2, concurrent);
-				} 
-				else { 
-					printf("ERROR: Redirecting failed\n");
-				}
-			} else {
-				printf("ERROR: Parsing commands failed\n");
-			}
+			run = support::redirect(cmd, num_arg, separator);
 			return run;
 		}
 		i++;	// increment iterator
@@ -149,7 +134,6 @@ int support::execute_command(char** cmd, int num_arg) {
 int support::execute(char** cmd, bool concurrent) {
 	//fork a child process
 	pid_t pid = fork();
-	int status;
 	
 	if (pid < 0 ) { 
 		// fork failed
@@ -157,7 +141,7 @@ int support::execute(char** cmd, bool concurrent) {
 		exit(1);
 	} 
 	else if (pid == 0) {
-		// Child process 
+		// Child process
 		if (execvp(*cmd, cmd) < 0) {
 			printf("Error: Execution failed, command not found\n");
 			exit(1);
@@ -167,7 +151,7 @@ int support::execute(char** cmd, bool concurrent) {
 		// Parent process
 		if (!concurrent) { 
 			// Wait for child process to end
-			while(wait(&status) != pid);
+			wait(NULL);
 		}
 	}
 	return 1;
@@ -175,37 +159,18 @@ int support::execute(char** cmd, bool concurrent) {
 	
 // Separate commands before and after the separator character
 void support::separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2) {
-	cout << "Num_arg = " << num_arg << endl; // DELETE
-	cout << "Command 1: " ; // DELETE
 	for (int i = 0; i < separator; i++) { 
 		cmd1[i] = cmd[i];
-		cout << cmd1[i] << " position: " << i << "; " ;// DELETE
 	}
 	
-	// DELETE
-	cout << "\nSeparator charater: " << cmd[separator] << " Separator position: " << separator << endl;
-
-	cout << "\nCommand 2: "; // DELETE
 	int index = 0;
-/*	for (int i = separator + 1; i < num_arg; i++) { 
-		cout << "index= " << index << "; i= " << i ; 
+	for (int i = separator + 1; i < num_arg; i++) { 
 		cmd2[index] = cmd[i];
-		cout << cmd2[index] << " position: " << i << "; "; // DELETE
 		index++;
-	}
-*/	
-	int i = separator + 1;
-	cout << "index= " << index << "; position i= " << i << endl;  // DELETE
-	while ( i < num_arg) {  
-		cmd2[index] = cmd[i];
-		cout << cmd2[index] << " position: " << i << "; "; // DELETE
-		index++;
-		i++;
 	}
 	cmd1[separator] = NULL; // last element is null
 	cmd2[index] = NULL; 	// last element is null
 }
-
 
 
 /****************************************************
@@ -214,6 +179,7 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  * Execute the most recent command by entering !!
  ****************************************************/
 
+// Show history of commands
 void support::show_history(char history[41][100], int size) {
 /*  
   int historyCount = size;
@@ -245,6 +211,7 @@ void support::show_history(char history[41][100], int size) {
 */
 }
 
+// save last command inot history
 void support::save_into_history(char history[41][100], char** cmd, int size)
 {
 /* for(int historyIndex = 40; historyIndex > 0; historyIndex--)
@@ -261,6 +228,7 @@ void support::save_into_history(char history[41][100], char** cmd, int size)
 */
 }
 
+// retrieve last command from history
 char** support::return_last_command(char history[41][100])
 {
 /* 
@@ -272,57 +240,70 @@ char** support::return_last_command(char history[41][100])
 */
 }
 
+
 /***************************************
  * PART IV
  * Redirecting Input and Output
  * Support < and > redirect commands
  ***************************************/
 
-// Redirect file to be the command input
-int support::redirect_input(char** cmd1, char** file, bool concurrent) {
-	int fd_in;	// input file descriptor 
-	int run = 1;	// flag to keep in the loop
-
-	// Open file read only
-	if ((fd_in = open(file[0], O_RDONLY)) < 0) { 
-		printf("ERROR: Cannot open this file\n");
-		return run;
-	}
-
-	// Replace standard input with input file
-	if (dup2(fd_in, 0) < 0) {
-		printf("ERROR: Unnable to duplicate file descriptor");
-		return run;
-	}
-	run = support::execute(cmd1, concurrent); // execute command in child process
-
-	close(fd_in);
-	return run;
-}
-
-// Redirect command output to a file
-int support::redirect_output(char** cmd1, char** file, bool concurrent) {
+// Redirect input/output from/to file
+int support::redirect(char** cmd, int num_arg, int separator) {
+	char* cmd1[MAX_LINE/4 + 1];	// command 
+	char* file[MAX_LINE/4 + 1];	// file name
+	int fd_in; 	// input file descriptor
 	int fd_out; 	// output file descriptor
-	int run = 1; // flag to keep in the loop
+	int run = 1; 	// flag to keep in the loop
+	pid_t pid; 	
 
-	// open file write only, create file with user/group write/read permission
-	fd_out = open(file[0], O_WRONLY | O_CREAT, S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP);
+	// separate command and file name 
+	support::separate_commands(cmd, num_arg, separator, cmd1, file);
 
-	if (fd_out < 0) { 
-		printf("ERROR: Cannot open this file\n");
+	pid = fork();
+	if (pid < 0) { 
+		printf("ERROR: Fork failed\n");
 		return run;
 	}
+	if (pid == 0) { // Child process
+		if (strcmp(cmd[separator], "<") == 0) { // Redirect input
+			// Open file read only
+			if ((fd_in = open(file[0], O_RDONLY)) < 0) { 
+				printf("ERROR: Cannot open this file\n");
+				return run;
+			}
+			// Replace standard input with input file
+			if (dup2(fd_in, 0) < 0) {
+				printf("ERROR: Unnable to duplicate file descriptor");
+				return run;
+			}
+		} 
+		
+		if (strcmp(cmd[separator], ">") == 0) { // Redirect output		
+			// open file write only, create file with user/group write/read permission
+			fd_out = open(file[0], O_WRONLY | O_CREAT, S_IWUSR | S_IWGRP | S_IRUSR | S_IRGRP);
 
-	// Replace standad output with output file
-	if (dup2(fd_out, 1) < 0) {
-		printf("ERROR: Unable to duplicate fiel descriptor");
-		return run;
-	}
-	run = support::execute(cmd1, concurrent); // execute command
+			if (fd_out < 0) { 
+				printf("ERROR: Cannot open this file\n");
+				return run;
+			}
+			// Replace standad output with output file
+			if (dup2(fd_out, 1) < 0) {
+				printf("ERROR: Unable to duplicate file descriptor");
+				return run;
+			}	
+		}
 
-	close(fd_out);
+		//Child process runs the command
+		if (execvp(cmd1[0], cmd1) < 0) { 
+			printf("ERROR: Command execution failed.\n");
+		}
+	} else { 
+		// parent waits
+		wait(NULL);
+	}	
 	return run;
 }
+
 
 /*****************************************************************
  * PART V
@@ -335,8 +316,8 @@ int support::redirect_output(char** cmd1, char** file, bool concurrent) {
 void support::pipe_cmd(char** cmd1, char** cmd2) {
 	int pipefd[2]; 		// file descriptors
 	pid_t pid1 = fork(); 	// child 1
-	
-	// 1 CHILD PROCESS AND PARENT ALSO RUNS COMMAND
+	pid_t pid2;
+
 	if (pipe(pipefd) < 0) { 
 		printf("ERROR: Pipe failed\n");
 		return;
@@ -344,67 +325,37 @@ void support::pipe_cmd(char** cmd1, char** cmd2) {
 	if (pid1 < 0) { 
 		printf("ERROR: Fork failed\n");
 	}
-	if (pid1 == 0) {	
-		// Child process
-		sleep(0.1); // sleep for one milisecond to wait for parent process to finish
 
-		// Child process reads from pipe 
-		close( pipefd[1] ) ; 	// close unused write end
-		dup2( pipefd[0], 0) ;
-		
-		if (execvp(*cmd2, cmd2) < 0) { // executes second command
-			printf("Error: Command 2 execution failed\n");
+	// Child process runs cmd 1
+	if (pid1 == 0) {	
+		// Child1 process writes to pipe 
+
+		// fork another process to run cmd 2
+		pid2 = fork();
+		if (pid2 == 0) { 
+			// Child2 process reads from pipe
+			close( pipefd[1] ) ; 	// close unused write end
+			dup2( pipefd[0], 0) ;
+
+			// execute cmd2
+			if (execvp(*cmd2, cmd2) < 0) {
+				printf("Error: Command 2 execution failed\n");
+			}
+		} else { 
+
+			close( pipefd[0] ) ; 	// close unused read end
+			dup2( pipefd[1], 1) ;
+
+			// execute cmd1
+			if (execvp(*cmd1, cmd1) < 0) {
+				printf("Error: Command 1 execution failed\n");
+			}
+
+			// Child 1 waits for child 2
+			wait(NULL);
 		}
 	} else { 
-		// Parent process writes to pipe
-		close( pipefd[0] ) ; 	// close unused read end
-		dup2( pipefd[1], 1) ;
-	
-		if (execvp(*cmd1, cmd1) < 0) { // ecevutes first command
-			printf("ERROR: Command 1 execution failed\n");
-		}
+		// Parent waits for child 1
+		wait(NULL);
 	}
-
-/*	2 CHILD PROCESSES (ONE FOR EACH COMMAND) WHILE PARENT WAITS
- 
- 	pid_t pid2 = fork(); 	//child 2
-
-	if (pipe(pipefd) == -1) {
-		printf("ERROR: Pipe failed\n");
-		return;
-	}
-
-	if ((pid1 < 0) || (pid2 < 0)) { 
-		printf("ERROR: Fork failed\n");
-		return;		
-	}
-
-	if (pid1  == 0) { 
-		sleep(0.1); // sleep for one milisecond to wait for process 2 to finish
-
-		// Child process 1 reads from pipe 
-		close( pipefd[1] ) ; 	// close unused write end
-		dup2( pipefd[0], 0) ;
-		
-		if (execvp(*cmd2, cmd2) < 0) { // executes second command
-			printf("Error: Command 2 execution failed\n");
-		}
-	} 
-	else if ( pid2 == 0) {
-		// Child process 2 writes to pipe
-		close( pipefd[0] ) ; 	// close unused read end
-		dup2( pipefd[1], 1) ;
-	
-		if (execvp(*cmd1, cmd1) < 0) { // ecevutes first command
-			printf("ERROR: Command 1 execution failed\n");
-		}
-	} 
-	else { 
-		// Parent process
-		waitpid(pid1, NULL, 0); 	// wait for child 1
-		waitpid(pid2, NULL, 0); 	// wait for child 2
-	}
-*/ 
-
 }
-
