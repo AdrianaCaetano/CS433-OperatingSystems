@@ -18,8 +18,8 @@
 #define BUFFER_SIZE 100 
 using namespace std;
 
-char support::last_cmd[41][BUFFER_SIZE]; 	/* hold history command */
-int support::last_command_size = 0;		/*Hold size of last command */
+char support::last_cmd[MAX_LINE]; /* hold history command */
+int support::last_command_size;  /*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
@@ -45,7 +45,7 @@ int support::split_command(char* input, char** cmd) {
 	int num_cmd = 0;
 
 	if (!input) { return num_cmd; } 
-	
+     
 	temp = strtok(input, " \t\r\a\n");
 	while (temp != NULL) {
 		cmd[num_cmd] = temp;
@@ -66,7 +66,7 @@ int support::split_command(char* input, char** cmd) {
 *************************************************************/
 
 // Check command before creating a new process
-int support::execute_command(char** cmd, int num_arg) {
+int support::execute_command(char** cmd, int num_arg, char * last_cmd) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 
@@ -78,25 +78,22 @@ int support::execute_command(char** cmd, int num_arg) {
 		return run;
 	}
 
-	if (strcmp(cmd[0], "history") == 0) {
-	  printf("Attempting to print history:\n");
-//	  show_history(last_cmd, last_command_size);
-//	  save_into_history(last_cmd, cmd, last_command_size);
-//	  return run;
-        }
-
 	if (strcmp(cmd[0], "!!") == 0) {
-		printf("Execute previous command\n");
-		//cmd = previous
-//		run = support::execute(cmd, concurrent);
+	  if(last_cmd == NULL) {
+	      cout << "No previous command found." << endl;
+	      exit(0);
+	    }
+	    //cmd = previous
+      num_arg = support::get_last_command(last_cmd, cmd);
 	}
-
+	
 	int i = 0 ; // iterator
 	int separator; // hold position of command separator 
 	char* cmd1[MAX_LINE/4 + 1]; // first command up to separator
 	char* cmd2[MAX_LINE/4 + 1]; // second command after separator
-
+	
 	while (i < num_arg) {
+
 		if (strcmp(cmd[i], "&") == 0 ) { // Parent runs concurrently  
 			concurrent = true;  	// change flaf
 			cmd[i] = NULL; 		// delete & character from command
@@ -127,7 +124,7 @@ int support::execute_command(char** cmd, int num_arg) {
 	}
 	run = support::execute(cmd, concurrent);
 	return run;  
-
+	
 } // end of execute_command
 
 // Execute command in a child process
@@ -156,7 +153,7 @@ int support::execute(char** cmd, bool concurrent) {
 	}
 	return 1;
 }
-	
+
 // Separate commands before and after the separator character
 void support::separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2) {
 	for (int i = 0; i < separator; i++) { 
@@ -179,65 +176,10 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  * Execute the most recent command by entering !!
  ****************************************************/
 
-// Show history of commands
-void support::show_history(char history[41][100], int size) {
-/*  
-  int historyCount = size;
-  
-  if(historyCount == 0)
-    {
-      printf("%s ", "Empty history");
-      printf("\n");
-    }
-  else
-    {
-    for (int i = 0, j = 0; i<10;i++)
-    {	
-      printf("%d.  ", historyCount);
-      while (history[i][j] != '\n' && history[i][j] != '\0')
-	{
-	  printf("%c", history[i][j]);
-	  j++;
-	}
-      printf("\n");
-      j = 0;
-      historyCount--;
-      if (historyCount ==  0)
-	{
-	  break;
-	}
-    }
-    } // end of else statement 
-*/
-}
-
-// save last command inot history
-void support::save_into_history(char history[41][100], char** cmd, int size)
+int support::get_last_command(char* last_cmd, char** cmd)
 {
-/* for(int historyIndex = 40; historyIndex > 0; historyIndex--)
-    {
-      strcpy(history[historyIndex], history[historyIndex-1]);
-    }
-
-   //The lines below give a null-terminated const char* for every character
-   //string sym(1, **cmd);
-   //cmd = sym.c_str();
-
-  //strcpy(history[0], cmd);
-  //size++;
-*/
-}
-
-// retrieve last command from history
-char** support::return_last_command(char history[41][100])
-{
-/* 
-  //return *history[0].c_str();
-  //return history[0];
-
-  char** pointerChar;
-  return pointerChar;
-*/
+  int numCommands = split_command(last_cmd, cmd);
+  return numCommands;
 }
 
 
@@ -310,7 +252,6 @@ int support::redirect(char** cmd, int num_arg, int separator) {
  * Communication via a Pipe
  * Send the output of one command as the input to another command
  *****************************************************************/
-
 
 // Creates a pipe to send output of cmd 1 to input of cmd 2
 void support::pipe_cmd(char** cmd1, char** cmd2) {

@@ -11,13 +11,14 @@
 
 #include <vector>
 #include <string>
+#define MAX_SIZE 80
 namespace support {
   
   // vector<string> history;
   // void showHistory();
   // void saveIntoHistory();
   // void showLastHistory();       
-  extern char last_cmd[41][100]; /* hold history command */
+  extern char last_cmd[MAX_SIZE]; /* hold history command */
   extern int last_command_size;  /*Hold size of last command */
   
   
@@ -28,23 +29,17 @@ namespace support {
   int split_command(char* input, char** cmd);
   
   // Check command to execute
-  int execute_command(char** cmd, int num_arg);
+  int execute_command(char** cmd, int num_arg, char* last_cmd);
   
   // Execute command in a child process
   int execute(char** cmd, bool concurrent);
   
   // Separate commands before and after the separator character
   void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);
-  
-  // prints out the last 10 commands used 
-  void show_history(char history[41][100],  int size);
-  
-  // saves a used command into the history array
-  void save_into_history(char history[41][100], char** cmd, int size);
 
   // Returns the last command used
-  char** return_last_command(char history[41][100]);
-  
+  int get_last_command(char* last_cmd, char** cmd);
+
   // redirect input/output
   int redirect(char** cmd, int num_arg, int separator); 
 
