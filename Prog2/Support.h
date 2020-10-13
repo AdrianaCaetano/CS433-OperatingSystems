@@ -8,9 +8,8 @@
 
 #ifndef SUPPORT_H
 #define SUPPORT_H
-
 namespace support {
-  
+
     // Show header with basic information about this program
     void show_header();
 

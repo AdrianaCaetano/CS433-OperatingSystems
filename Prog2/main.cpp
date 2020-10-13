@@ -8,7 +8,7 @@
 
 
 #include <cstdio>  	// printf(), fflush(), fgets()
-#include <cstring>	// strcpy()
+#include <cstring>	// strcpy(), strlen()
 
 #include "Support.h"
 
@@ -34,9 +34,11 @@ int main(void) {
 		printf("osh->");
 		fflush(stdout);
 
-	  	//last command = last input
-	  	strcpy(last_cmd, input);
-		
+		if (strlen(input) > 0) {
+	  		//Save input as the last command
+			strcpy(last_cmd, input);
+		}
+
 		// get input
 		fgets(input, MAX_LINE, stdin);
 
@@ -49,9 +51,9 @@ int main(void) {
 		}
 
 	}
-    printf("---------- End of Program ----------\n");
+	printf("---------- End of Program ----------\n");
 	
-    return 0;
+	return 0;
 
 }
 
