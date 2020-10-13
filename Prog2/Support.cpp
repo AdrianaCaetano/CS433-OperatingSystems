@@ -15,21 +15,21 @@
 #include "Support.h"
 
 #define MAX_LINE 80 		/* The max input length */
-#define BUFFER_SIZE 100 
+//#define BUFFER_SIZE 100 
 using namespace std;
 
-char support::last_cmd[MAX_LINE]; /* hold history command */
-int support::last_command_size;  /*Hold size of last command */
+//char support::last_cmd[MAX_LINE]; /* hold history command */
+//int support::last_command_size;  /*Hold size of last command */
 
 // Show header with basic information about this program
 void support::show_header() {
-        cout << "\n======================================================================\n\n";
-        cout << "CS 433 Programming assignment 2\n";
-        cout << "Author: Adriana Caetano and Ryan Pisuena\n";
-        cout << "Date: 10/14/2020\n";
-        cout << "Course: CS433 (Operating Systems)\n";
-        cout << "Description : Unix Shell and History Feature\n";
-        cout << "\n======================================================================\n\n";
+    cout << "\n======================================================================\n\n";
+    cout << "CS 433 Programming assignment 2\n";
+    cout << "Author: Adriana Caetano and Ryan Pisuena\n";
+    cout << "Date: 10/14/2020\n";
+    cout << "Course: CS433 (Operating Systems)\n";
+    cout << "Description : Unix Shell and History Feature\n";
+    cout << "\n======================================================================\n\n";
 }
 
 
@@ -79,12 +79,26 @@ int support::execute_command(char** cmd, int num_arg, char * last_cmd) {
 	}
 
 	if (strcmp(cmd[0], "!!") == 0) {
-	  if(last_cmd == NULL) {
+        //cmd = previous
+        int num_arg_last;
+        num_arg_last = support::get_last_command(last_cmd, cmd);
+        cout << "Num_Arg = " << num_arg << endl;        
+        cout << "last command = " ;
+        
+        int i = 0; 
+        while (last_cmd[i] != NULL) { 
+            cout << last_cmd[i];
+            i++;
+        } 
+        cout << endl;
+
+
+        if (last_cmd == NULL) {
 	      cout << "No previous command found." << endl;
 	      exit(0);
 	    }
 	    //cmd = previous
-      num_arg = support::get_last_command(last_cmd, cmd);
+	    //num_arg = support::get_last_command(last_cmd, cmd);
 	}
 	
 	int i = 0 ; // iterator
@@ -176,10 +190,9 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  * Execute the most recent command by entering !!
  ****************************************************/
 
-int support::get_last_command(char* last_cmd, char** cmd)
-{
-  int numCommands = split_command(last_cmd, cmd);
-  return numCommands;
+int support::get_last_command(char* last_cmd, char** cmd) {
+    int numCommands = split_command(last_cmd, cmd);
+    return numCommands;
 }
 
 

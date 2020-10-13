@@ -19,13 +19,13 @@ using namespace support;
 
 int main(void) {
 
-  char input[MAX_LINE];						/* user input */
-  char* commands[MAX_LINE/2 + 1]; /* command line arguments */
-	char last_cmd[MAX_LINE]; 				/* hold history command */
-	int num_args = 0; 							/* hold number of command arguments */
-	int should_run = 1; 						/* flag to determine when to exit the program */
+    char input[MAX_LINE];           /* user input */
+    char* commands[MAX_LINE/2 + 1]; /* command line arguments */
+    char last_cmd[MAX_LINE];        /* hold history command */
+    int num_args = 0;               /* hold number of command arguments */
+    int should_run = 1;             /* flag to determine when to exit the program */
 
-  show_header();
+	show_header();
 	printf("This program simulates a shell.\n") ;
 	printf("Please input your command.\n\n") ;
 	
@@ -34,8 +34,8 @@ int main(void) {
 		printf("osh->");
 		fflush(stdout);
 
-	  //last command = last input
-	  strcpy(last_cmd, input);
+	  	//last command = last input
+	  	strcpy(last_cmd, input);
 		
 		// get input
 		fgets(input, MAX_LINE, stdin);
@@ -45,13 +45,13 @@ int main(void) {
 
 		if (num_args != 0) { 	
 			// execute command
-			should_run = execute_command(commands, num_args);
+			should_run = execute_command(commands, num_args, last_cmd);
 		}
 
 	}
-  printf("---------- End of Program ----------\n");
+    printf("---------- End of Program ----------\n");
 	
-  return 0;
+    return 0;
 
 }
 

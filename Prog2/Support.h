@@ -9,42 +9,31 @@
 #ifndef SUPPORT_H
 #define SUPPORT_H
 
-#include <vector>
-#include <string>
-#define MAX_SIZE 80
 namespace support {
   
-  // vector<string> history;
-  // void showHistory();
-  // void saveIntoHistory();
-  // void showLastHistory();       
-  extern char last_cmd[MAX_SIZE]; /* hold history command */
-  extern int last_command_size;  /*Hold size of last command */
-  
-  
-  // Show header with basic information about this program
-  void show_header();
-  
-  // Parse the input to get commands
-  int split_command(char* input, char** cmd);
-  
-  // Check command to execute
-  int execute_command(char** cmd, int num_arg, char* last_cmd);
-  
-  // Execute command in a child process
-  int execute(char** cmd, bool concurrent);
-  
-  // Separate commands before and after the separator character
-  void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);
+    // Show header with basic information about this program
+    void show_header();
 
-  // Returns the last command used
-  int get_last_command(char* last_cmd, char** cmd);
+    // Parse the input to get commands
+    int split_command(char* input, char** cmd);
 
-  // redirect input/output
-  int redirect(char** cmd, int num_arg, int separator); 
+    // Check command to execute
+    int execute_command(char** cmd, int num_arg, char* last_cmd);
 
-  // Create a pipe and send output of cmd1 to input of cmd2
-  void pipe_cmd(char** cmd1, char** cmd2);
-  
+    // Execute command in a child process
+    int execute(char** cmd, bool concurrent);
+
+    // Separate commands before and after the separator character
+    void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);
+
+    // Returns the last command used
+    int get_last_command(char* last_cmd, char** cmd);
+
+    // redirect input/output
+    int redirect(char** cmd, int num_arg, int separator); 
+
+    // Create a pipe and send output of cmd1 to input of cmd2
+    void pipe_cmd(char** cmd1, char** cmd2);
+
 }
 #endif
