@@ -35,8 +35,10 @@ int main(void) {
 		fflush(stdout);
 
 	  	//last command = last input
-	  	strcpy(last_cmd, input);
-		
+	  	if (strlen(input) > 0 ) { 
+			strcpy(last_cmd, input);
+		}
+
 		// get input
 		fgets(input, MAX_LINE, stdin);
 
