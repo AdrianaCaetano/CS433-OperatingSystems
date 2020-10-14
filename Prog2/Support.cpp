@@ -66,7 +66,7 @@ int support::split_command(char* input, char** cmd) {
 *************************************************************/
 
 // Check command before creating a new process
-int support::execute_command(char** cmd, int num_arg  /*, char* last_cmd */) {
+int support::execute_command(char** cmd, int num_arg) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
 	int i = 0 ; // iterator
