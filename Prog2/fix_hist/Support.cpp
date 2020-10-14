@@ -24,7 +24,7 @@ using namespace std;
 // Show header with basic information about this program
 void support::show_header() {
     cout << "\n======================================================================\n\n";
-    cout << "CS 433 Programming assignment 2\n";
+    cout << "CS 433 Programming Assignment 2\n";
     cout << "Author: Adriana Caetano and Ryan Pisuena\n";
     cout << "Date: 10/14/2020\n";
     cout << "Course: CS433 (Operating Systems)\n";
@@ -66,15 +66,47 @@ int support::split_command(char* input, char** cmd) {
 *************************************************************/
 
 // Check command before creating a new process
-int support::execute_command(char** cmd, int num_arg  /*, char* last_cmd */) {
+int support::execute_command(char** cmd, int num_arg, char * last_cmd) {
 	bool concurrent = false; // flag for parent process wait for child process
 	int run = 1; // flag if it should continue running
-	int i = 0 ; // iterator
+
+	if (cmd == NULL) { return run; }
+
+	if (strcmp(cmd[0], "exit") == 0) { 
+		printf("Good bye!\n");
+		run = 0; // change flag to stop running
+		return run;
+	}
+
+	if (strcmp(cmd[0], "!!") == 0) {
+		//cmd = previous
+		int num_arg_last;
+		num_arg_last = support::get_last_command(last_cmd, cmd);
+		cout << "Num_Arg = " << num_arg << endl;        
+		cout << "last command = " ;
+        
+		int i = 0; 
+		while (last_cmd[i] != NULL) { 
+			cout << last_cmd[i];
+			i++;
+		} 
+		cout << endl;
+
+
+		if (cmd[0] == NULL) {
+			cout << "No previous command found." << endl;
+			exit(0);
+		}
+		//cmd = previous
+		//num_arg = support::get_last_command(last_cmd, cmd);
+	}
+	
+    int i = 0 ; // iterator
 	int separator; // hold position of command separator 
 	char* cmd1[MAX_LINE/4 + 1]; // first command up to separator
 	char* cmd2[MAX_LINE/4 + 1]; // second command after separator
 	
-	while ( i < num_arg ) {
+	while (i < num_arg) {
 
 		if (strcmp(cmd[i], "&") == 0 ) { // Parent runs concurrently  
 			concurrent = true;  	// change flaf
@@ -158,7 +190,10 @@ void support::separate_commands(char** cmd, int num_arg, int separator, char** c
  * Execute the most recent command by entering !!
  ****************************************************/
 
-	// LAST COMMAND IS SAVED AND RETRIEVED IN MAIN
+int support::get_last_command(char* last_cmd, char** cmd) {
+    int numCommands = split_command(last_cmd, cmd);
+    return numCommands;
+}
 
 
 /***************************************
