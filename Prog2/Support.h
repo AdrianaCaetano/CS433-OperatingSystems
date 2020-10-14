@@ -17,17 +17,14 @@ namespace support {
     // Parse the input to get commands
     int split_command(char* input, char** cmd);
 
-    // Check command to execute
-    int execute_command(char** cmd, int num_arg, char* last_cmd);
+    // Check command to execute = look for &, <, >, and |
+    int execute_command(char** cmd, int num_arg);
 
     // Execute command in a child process
     int execute(char** cmd, bool concurrent);
 
     // Separate commands before and after the separator character
     void separate_commands(char** cmd, int num_arg, int separator, char** cmd1, char** cmd2);
-
-    // Returns the last command used
-    int get_last_command(char* last_cmd, char** cmd);
 
     // redirect input/output
     int redirect(char** cmd, int num_arg, int separator); 
