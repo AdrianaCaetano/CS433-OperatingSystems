@@ -1,3 +1,12 @@
+/*
+ * Programming Assignment 3 - CS 433
+ * Description: Scheduling Algorithms
+ * Author: Adriana Caetano and Ryan Pisuena
+ * Date: 11/04/2020
+ * File: scheduling_sjf.cpp
+ */
+
+
 /**
  * Driver program 
  * 
