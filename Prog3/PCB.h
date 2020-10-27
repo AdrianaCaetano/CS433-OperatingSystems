@@ -5,8 +5,8 @@
  * Date: 11/04/2020
  * File: PCB.h
  */
-
-
+#include<vector>
+using namespace std;
 #pragma once
 
 // Remember to add comments to your code
@@ -32,6 +32,7 @@ public:
 	ProcState state;
 
 	// TODO: Add constructor and other necessary functions for the PCB class
+	PCB(unsigned int id, unsigned int priority, ProcState state);
 };
 
 /*
@@ -39,5 +40,10 @@ An array(list) of all PCB elements in the system.
 */
 class PCBTable {
 	// TODO: Add your implementation of the PCBTable
+  // TODO: Add your implementation of the PCBTable
+  vector<PCB> vectorOfPCB;
+
+  void pushToTable(PCB node);
+  void removeFromTable(int priority);
 
 };
