@@ -32,7 +32,7 @@ time quantum, e.g.
 `./rr schedule.txt 6`
 
 It is assumed that all tasks arrive at the same time 0, and in the order according to the
-list in the input text file. An example input file “schedule.txt” is provided for testing
+list in the input text file. An example input file ***“schedule.txt”*** is provided for testing
 your programs. But your program should work for any list of tasks following the same
 format and will be graded using a different input file.
 
