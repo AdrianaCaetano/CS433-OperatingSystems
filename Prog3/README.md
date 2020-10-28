@@ -32,7 +32,7 @@ time quantum, e.g.
 `./rr schedule.txt 6`
 
 It is assumed that all tasks arrive at the same time 0, and in the order according to the
-list in the input text file. An example input file “schedule.txt” is provided for testing
+list in the input text file. An example input file ***“schedule.txt”*** is provided for testing
 your programs. But your program should work for any list of tasks following the same
 format and will be graded using a different input file.
 
@@ -42,7 +42,8 @@ when it starts.
 2. Your program should print out the turn-around and waiting time of each thread,
 and the average turn-around time and average waiting time, for example:
 
-`T1 turn-around time = 20, waiting time = 0
+```
+T1 turn-around time = 20, waiting time = 0
 
 T2 turn-around time = 45, waiting time = 20
 
@@ -58,7 +59,8 @@ T7 turn-around time = 145, waiting time = 115
 
 T8 turn-around time = 170, waiting time = 145
 
-Average turn-around time = 94, Average waiting time = 73`
+Average turn-around time = 94, Average waiting time = 73
+```
 
 
 ## Extra Credits
