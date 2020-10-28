@@ -5,45 +5,90 @@
  * Date: 11/04/2020
  * File: PCB.h
  */
-#include<vector>
-using namespace std;
+
 #pragma once
 
-// Remember to add comments to your code
-// ...
+#include <string>
+#include <vector>
+
+using namespace std;
 
 // enum class of process state
-// A process (PCB) in ready queue should be in READY state
 enum class ProcState {NEW, READY, RUNNING, WAITING, TERMINATED};
 
 /* 
-Process control block(PCB) is a data structure representing a process in the system.
-A process should have at least an ID and a state(i.e.NEW, READY, RUNNING, WAITING or TERMINATED).
-It may also have other attributes, such as scheduling information (e.g. priority)
-*/
+ * Process control block(PCB) is a data structure representing a process in the system.
+ * A process should have at least an ID and a state(i.e.NEW, READY, RUNNING, WAITING or TERMINATED).
+ * A process in the ReadyQueue should be in READY state
+ * It may also have other attributes, such as scheduling information (e.g. priority)
+ */
 class PCB {
-public:
-    // The unique process ID
-	unsigned int id;
-    // The priority of a process valued between 1-50. Larger number represents higher priority
-	unsigned int priority;
-	// The current state of the process.
-	// A process in the ReadyQueue should be in READY state
-	ProcState state;
+    private:
+        string id;  	// The unique process name/ID
+        unsigned int priority; 	// Values between 1-50. Larger number represents higher priority
+        unsigned int cpuBurst; 	// CPU burst = how much time the process needs to complete
+        ProcState state; 	// The current state of the process.
 
-	// TODO: Add constructor and other necessary functions for the PCB class
-	PCB(unsigned int id, unsigned int priority, ProcState state);
+    public:
+	// Constructors and destructor
+        PCB();
+        PCB(string id, unsigned int priority, unsigned int cpuBurst);
+        PCB(string id, unsigned int priority, unsigned int cpuBurst, ProcState state);
+        ~PCB();
+
+        // Useful methods
+	// Get PCB priority
+        unsigned int getPriority(); 
+
+	// get PCB cpu burst
+        unsigned int getCpuBurst();
+
+	// Update PCB cpu burst
+        void updateCpuBurst(unsigned int usedTime);
+
+	// Get PCB state
+        ProcState getState();
+
+	// Update PCB state passing a new state as a paramenter
+        void updateState(ProcState state);
+
+	// Set PCB state to READY
+        void setReady();
+
+	// Set PCB state to RUNNING
+        void setRunning();
+
+	// Set PCB state to WAITING
+        void setWaiting();
+
+	// Set PCB state to TERMINATED
+        void setTerminated();
+
+	// Display summarized PCB information
+        void displayPCB();
+
+	// Display complete PCB information
+	void displayCompletePCB();
 };
 
 /*
-An array(list) of all PCB elements in the system.
-*/
+ * A container of all PCB elements in the system.
+ */
 class PCBTable {
-	// TODO: Add your implementation of the PCBTable
-  // TODO: Add your implementation of the PCBTable
-  vector<PCB> vectorOfPCB;
+    private:
+        vector<PCB*> pcbTable;
 
-  void pushToTable(PCB node);
-  void removeFromTable(int priority);
+    public:
+	// Constructor and Destructor
+	PCBTable();
+        ~PCBTable();
 
+	// Include a PCB into the table
+        void pushToTable(PCB* pcb);
+
+	// Remove a PCB from the table
+        void removeFromTable(PCB* pcb);
+
+	// Get a PCB from the table
+        PCB* getProcess(unsigned int pcbPriority);
 };

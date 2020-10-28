@@ -53,9 +53,13 @@ int main(int argc, char *argv[])
     int priority;
     int burst;
 
+    // create a table to save processes
+    PCBTable table;
+
     // open the input file
     std::ifstream infile(argv[1]);
     string line;
+
     while(getline(infile, line) ) {
         std::istringstream ss (line);
         // Get the task name
@@ -69,6 +73,9 @@ int main(int argc, char *argv[])
         // Get the task burst length 
         getline(ss, token, ',');
         burst = std::stoi(token);
+
+	// Save pcb to table
+	table(name, priority, burst);
         
         cout << name << " " << priority << " " << burst << endl;
         // TODO: add the task to the scheduler's ready queue
