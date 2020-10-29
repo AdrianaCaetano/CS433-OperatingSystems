@@ -5,12 +5,14 @@
  * Date: 11/04/2020
  * File: PCB.cpp
  */
-using namespace std;
 
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include "PCB.h"
+
+using namespace std;
 
 // ****** PCB *****
 // Constructors
@@ -37,9 +39,30 @@ PCB::PCB(string id, unsigned int priority, unsigned int cpuBurst, ProcState stat
 PCB::~PCB() {}
 
 // Useful methods
+
+void PCB::setID(string id) 
+{
+    this->id = id;
+}
+
+string PCB::getID()
+{
+    return this->id;
+}
+
+void PCB::setPriority(unsigned int priority) 
+{
+    this->priority = priority;
+}
+
 unsigned int PCB::getPriority()    
 {
-    return ->priority;
+    return this->priority;
+}
+
+void PCB::setCpuBurst(unsigned int burst)
+{
+    this->cpuBurst = burst;
 }
 
 unsigned int PCB::getCpuBurst() 
@@ -72,7 +95,7 @@ void PCB::setReady() {
 }
 
 void PCB::setRunning() {
-    this->state = ProcState::RUNNIG;
+    this->state = ProcState::RUNNING;
 }
 
 void PCB::setWaiting() {
@@ -85,12 +108,12 @@ void PCB::setTerminated() {
 
 void PCB::displayPCB() 
 {
-    printf("[", id, "] [", priority, "] [", cpuBurst, "]\n");
+    cout << "[" <<  id << "] [" <<  priority << "] [" << cpuBurst << "]\n";
 }
 
-void PCB::displayPCBcomplete() 
+void PCB::displayCompletePCB() 
 {
-    printf("ID: ", id, " - Priority: ", priority, " - CPU Burst: ", cpuBurst, " - State: ")
+    cout << "ID: " << id << " - Priority: " << priority << " - CPU Burst: " << cpuBurst << " - State: ";
     switch(state) 
     {
         case ProcState::NEW:
@@ -111,32 +134,70 @@ void PCB::displayPCBcomplete()
     }
 } 
 
+
 //***** PCB Table *****
-PCBTable::PCBTable() 
-{}
+PCBTable::PCBTable() {}
+
+PCBTable::PCBTable(unsigned int size) 
+{
+    PCB tablePCB [size];	// array of PCBs
+}
 
 PCBTable::~PCBTable() 
 { 
-    for (auto &pcb : pcbTable) {
+    delete [] tablePCB; 	        // delete array
+/*
+    for (auto &pcb : pcbTable) {	// delete vector
         delete pcb;
+    }
+*/
+}
+
+// array table functions ***********
+// show all processes in the table
+void PCBTable::showTable()
+{
+    for (auto i=0; i < size; i++)
+    {
+        tablePCB[i].PCB::displayPCB();
     }
 }
 
+PCB* PCBTable::getProcess(unsigned int priority)
+{
+    //find process position
+    unsigned int i;
+    for (i = 0; i < size; i++) {
+        if (tablePCB[i].getPriority() == priority) { return &tablePCB[i]; }
+
+        printf("priority not found\n");
+        return NULL;
+    }       
+}
+
+
+// vector table functions **********
+
+/*
+//vector table - add pcb
 void PCBTable::pushToTable(PCB* pcb)
 {
     pcbTable.push_back(pcb);
 }
 
+// vector table - remove pcb
 void PCBTable::removeFromTable(PCB* pcb)
 {
     //find pcb position
-    auto it;
+    int it;
     for (it = pcbTable.begin(); it != pcbTable.end(); it++) {
-       if (it*->id == pcb->id) { break; } 
+       if (it*.getID() == pcb.getID()) { break; } 
     }
     pcbTable.erase(it);
 }
-
+*/
+/*
+// vector table - return a process given its priority
 PCB* PCBTable::getProcess(unsigned int pcbPriority)
 { 
     //find pcb 
@@ -144,10 +205,11 @@ PCB* PCBTable::getProcess(unsigned int pcbPriority)
     for (it = pcbTable.begin(); it != pcbTable.end(); it++) {
         if (it*->priority == pcb->priority) 
         { 
-            return pcbTable[it];
+            return &pcbTable[it];
         }
         else {
             printf("Priority not found");
         } 
     }
 }
+*/

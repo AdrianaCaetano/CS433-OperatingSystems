@@ -22,7 +22,8 @@ enum class ProcState {NEW, READY, RUNNING, WAITING, TERMINATED};
  * A process in the ReadyQueue should be in READY state
  * It may also have other attributes, such as scheduling information (e.g. priority)
  */
-class PCB {
+class PCB 
+{
     private:
         string id;  	// The unique process name/ID
         unsigned int priority; 	// Values between 1-50. Larger number represents higher priority
@@ -37,8 +38,21 @@ class PCB {
         ~PCB();
 
         // Useful methods
+
+        // set PCB ID/name
+        void setID(string id);
+
+        // get PCB id/name
+        string getID();
+
+        // Set PCB priority
+        void setPriority(unsigned int priority);
+ 
 	// Get PCB priority
         unsigned int getPriority(); 
+
+        // set PCB cpu burst
+	void setCpuBurst(unsigned int burst);
 
 	// get PCB cpu burst
         unsigned int getCpuBurst();
@@ -74,21 +88,28 @@ class PCB {
 /*
  * A container of all PCB elements in the system.
  */
-class PCBTable {
+class PCBTable 
+{
     private:
         vector<PCB*> pcbTable;
+        unsigned int size = 10; 	// default value
+        PCB* tablePCB;			// PCB array
 
     public:
 	// Constructor and Destructor
 	PCBTable();
+        PCBTable(unsigned int size);
         ~PCBTable();
 
+        // Print all table's elements
+        void showTable();
+/*
 	// Include a PCB into the table
         void pushToTable(PCB* pcb);
 
 	// Remove a PCB from the table
         void removeFromTable(PCB* pcb);
-
+*/
 	// Get a PCB from the table
         PCB* getProcess(unsigned int pcbPriority);
 };

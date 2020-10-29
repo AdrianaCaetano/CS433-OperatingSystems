@@ -25,6 +25,9 @@
 #include <sstream>
 #include <string>
 
+#include "PCB.h"
+
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -54,7 +57,7 @@ int main(int argc, char *argv[])
     int burst;
 
     // create a table to save processes
-    PCBTable table;
+    PCB table[10];
 
     // open the input file
     std::ifstream infile(argv[1]);
@@ -74,10 +77,15 @@ int main(int argc, char *argv[])
         getline(ss, token, ',');
         burst = std::stoi(token);
 
-	// Save pcb to table
-	table(name, priority, burst);
+	// Save pcb into table
+	int i = 0;
+        table[i].setID(name);
+        table[i].setPriority(priority);
+        table[i].setCpuBurst(burst);
+        table[i].displayPCB();
+        i++;
         
-        cout << name << " " << priority << " " << burst << endl;
+        //cout << name << " " << priority << " " << burst << endl;
         // TODO: add the task to the scheduler's ready queue
         // You will need a data structure, i.e. PCB, to represent a task 
     }
