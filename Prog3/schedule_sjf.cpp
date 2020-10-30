@@ -41,12 +41,7 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]); 
-        if (QUANTUM != 0) {
-            cout << "Time quantum: "<< QUANTUM << endl;
-        } else {
-            cout << "No time quantum.\n";
-        }
+        QUANTUM = atoi(argv[2]);
     }
 
     // Read task name, priority and burst length from the input file 

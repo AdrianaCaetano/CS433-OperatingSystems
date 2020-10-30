@@ -202,15 +202,26 @@ void Functions::run_task(PCB* p1, int time)
 {
     // set state to running
     p1->setRunning();
-
-    // update runtime
-    p1->updateRuntime(time);
+    int remainder = p1->getCpuBurst() - p1->getRuntime();
 
     // Print process runtime
     cout << p1->getState();
     cout << " task = ";
     p1->displayPCB();
-    cout << " for " << time << " units.\n";    
+
+    // update runtime
+    if (remainder > time) 
+    {
+        // run during the whole time
+        p1->updateRuntime(time);
+        cout << " for " << time << " units.\n";    
+    } 
+    else 
+    {
+        // run only the remainder time
+        p1->updateRuntime(remainder);
+        cout << " for " << remainder << " units.\n";    
+    }
 }
 
 
