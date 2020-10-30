@@ -7,14 +7,9 @@
  */
 
 
-/**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
+/*
  * The input file is in the format:
- *
- *  [name], [priority], [CPU burst]
+ * [name], [priority], [CPU burst]
  */
 
 #include <stdio.h>
@@ -24,22 +19,30 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <queue>
 
 #include "PCB.h"
 
-
 using namespace std;
+/*
+bool operator<(const PCB& p1, PCB& p2)
+{
+    // Convert to negative to reverse priority scheduling for 
+    // cpu time burst
+    int negativeBurstP1 = -1 * p1.getCpuBurst();
+    int negativeBurstP2 = -1 * p2.getCpuBurst();
 
+    // The smaller value would have higher priority
+    return negativeBurstP1 < negativeBurstP2;
+}
+*/
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
-    
+
+    Functions::show_header("SJF");
+
     int QUANTUM = 10;
+    
     // Check that input file is provided at command line
     if(argc < 2 ) {
         cerr << "Usage: " << argv[0] << " <input_file> [<time_quantum>]" << endl;
@@ -48,7 +51,12 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        QUANTUM = atoi(argv[2]); 
+        if (QUANTUM != 0) {
+            cout << "Time quantum: "<< QUANTUM << endl;
+        } else {
+            cout << "No time quantum.\n";
+        }
     }
 
     // Read task name, priority and burst length from the input file 
@@ -56,8 +64,10 @@ int main(int argc, char *argv[])
     int priority;
     int burst;
 
-    // create a table to save processes
-    PCB table[10];
+    // create a table object to save 10 processes
+    //PCBTable myTable(10);
+    int numProcesses = 10;
+    PCB myTable[numProcesses];
 
     // open the input file
     std::ifstream infile(argv[1]);
@@ -79,16 +89,32 @@ int main(int argc, char *argv[])
 
 	// Save pcb into table
 	int i = 0;
-        table[i].setID(name);
-        table[i].setPriority(priority);
-        table[i].setCpuBurst(burst);
-        table[i].displayPCB();
+        myTable[i].setID(name);
+        myTable[i].setPriority(priority);
+        myTable[i].setCpuBurst(burst);
+        myTable[i].displayPCB();
         i++;
-        
-        //cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
     }
+    
+    // ReadyQueue for SJF 
+    priority_queue<PCB> sjf_queue;
+   /* 
+    for (int i = 0; i < numProcesses; i++) 
+    {
+        // insert a process in the queue
+        sjf_queue.push(myTable[i]);       
+    }
+    
+    // Test if queue is correct
+    while(!sjf_queue.empty()
+    {
+       PCB process = sjf_queue.top();
+       sjf_queue.pop();
+       process.displayPCB();
+  
+    }
+
+*/
 
 
     // TODO: Add your code to run the scheduler and print out statistics

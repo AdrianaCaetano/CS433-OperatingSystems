@@ -13,7 +13,9 @@
 
 using namespace std;
 
-// enum class of process state
+/*
+ * Enumerator class of process' state
+ */
 enum class ProcState {NEW, READY, RUNNING, WAITING, TERMINATED};
 
 /* 
@@ -26,18 +28,21 @@ class PCB
 {
     private:
         string id;  	// The unique process name/ID
-        unsigned int priority; 	// Values between 1-50. Larger number represents higher priority
-        unsigned int cpuBurst; 	// CPU burst = how much time the process needs to complete
+        int priority; 	// Values between 1-50. Larger number represents higher priority
+        int cpuBurst; 	// CPU burst = how much time the process needs to complete
+        int runtime;    // Compute run time 
+        int turnaround; // Compute how long it took to finish this process
+        int wait;       // Compute how long it wait to run
         ProcState state; 	// The current state of the process.
 
     public:
 	// Constructors and destructor
         PCB();
-        PCB(string id, unsigned int priority, unsigned int cpuBurst);
-        PCB(string id, unsigned int priority, unsigned int cpuBurst, ProcState state);
+        PCB(string id, int priority, int cpuBurst);
+        PCB(string id, int priority, int cpuBurst, int runtime, int turnaround, int wait, ProcState state);
         ~PCB();
 
-        // Useful methods
+        // Useful methods - getters, setters, and update values
 
         // set PCB ID/name
         void setID(string id);
@@ -46,22 +51,37 @@ class PCB
         string getID();
 
         // Set PCB priority
-        void setPriority(unsigned int priority);
+        void setPriority(int priority);
  
 	// Get PCB priority
-        unsigned int getPriority(); 
+        int getPriority(); 
 
         // set PCB cpu burst
-	void setCpuBurst(unsigned int burst);
+	void setCpuBurst(int burst);
 
 	// get PCB cpu burst
-        unsigned int getCpuBurst();
+        int getCpuBurst();
 
-	// Update PCB cpu burst
-        void updateCpuBurst(unsigned int usedTime);
+        // get PCB runtime
+        int getRuntime();
+
+	// Update PCB runtime
+        void updateRuntime(int timeSlice);
+
+        // get PCB turnaround time
+        int getTurnaround();
+
+	// Update PCB turnaround time
+        void updateTurnaround();
+
+        // get PCB wait time
+        int getWait();
+
+	// Update PCB wait time
+        void updateWait(int waited);
 
 	// Get PCB state
-        ProcState getState();
+        string getState();
 
 	// Update PCB state passing a new state as a paramenter
         void updateState(ProcState state);
@@ -91,25 +111,29 @@ class PCB
 class PCBTable 
 {
     private:
-        vector<PCB*> pcbTable;
-        unsigned int size = 10; 	// default value
-        PCB* tablePCB;			// PCB array
+        int size; 
+        PCB* tablePCB;	// PCB array
 
     public:
 	// Constructor and Destructor
 	PCBTable();
-        PCBTable(unsigned int size);
+        PCBTable(int size);
         ~PCBTable();
 
-        // Print all table's elements
+        // Print table's elements
         void showTable();
-/*
-	// Include a PCB into the table
-        void pushToTable(PCB* pcb);
-
-	// Remove a PCB from the table
-        void removeFromTable(PCB* pcb);
-*/
-	// Get a PCB from the table
-        PCB* getProcess(unsigned int pcbPriority);
+        int getSize();
 };
+
+/*
+ * General Functions
+ */
+namespace Functions 
+{
+    void show_header(string algorithm);
+
+    void run_task(PCB& p1, int time);
+
+    void calculateAverages(PCB table[], int size); 
+}
+
