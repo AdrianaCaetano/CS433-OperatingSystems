@@ -13,6 +13,7 @@
  *  [name], [priority], [CPU burst]
  */
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -21,19 +22,11 @@
 #include <sstream>
 #include <string.h>
 #include <string>
+#include <vector>
 
 #include "PCB.h"
 
 using namespace std;
-
-// Overload operator< to order the queue using pcb priority
-bool operator<(PCB& P1, PCB& P2)
-{
-    // higher value = higher priority
-    int p1 = P1.getPriority();
-    int p2 = P2.getPriority();
-    return p1 < p2;
-}
 
 int main(int argc, char *argv[])
 {
@@ -57,15 +50,12 @@ int main(int argc, char *argv[])
     int burst;
 
     // Container to hold processes
-    int numProcesses = 8;
-    PCB myTable[numProcesses];
+    vector<PCB> myTable;
 
     // open the input file
     std::ifstream infile(argv[1]);
     string line;
    
-    // iterator to populate container 
-    int i = 0;
     while(getline(infile, line) ) {
         std::istringstream ss (line);
         // Get the task name
@@ -79,56 +69,61 @@ int main(int argc, char *argv[])
         // Get the task burst length 
         getline(ss, token, ',');
         burst = std::stoi(token);
-    
-        // Save PCBs into table
-        myTable[i].setID(name);
-        myTable[i].setPriority(priority);
-        myTable[i].setCpuBurst(burst);
-        myTable[i].displayPCB();
-        cout << endl;
-        i++;
+        
+        // save PCB into table
+        myTable.push_back(PCB(name, priority, burst));
     }
     
-  //  myTable.showTable();
-
-    // Priority queue from std library
-    priority_queue<PCB*> pq;
-    for (int i = 0; i < numProcesses; i++)
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
     {
-        // insert processes into queue
-        pq.push(&myTable[i]);
-        
-        // change state to ready
+        p.displayPCB();
+        cout<<endl;
+    }
+
+    // Create a priority ready queue with the processes on the table
+    vector<PCB*> priority_queue;
+    for (int i = 0; i < myTable.size(); i++)
+    { 
+        priority_queue.push_back(&myTable[i]);
         myTable[i].setReady();
     }
+  
+    // sort queue by priority
+    sort(priority_queue.begin(), priority_queue.end(), &Functions::comparePriority);
 
     // variable to hold wait time
-    int waitTime = 0;       
+    int waitTime = 0;
 
-    // run processes from priority queue
-    while (!pq.empty()) 
+    // Run tasks in the queue
+    cout << endl << "Run Priority (higher value = higher priority):" <<endl;
+    while(!priority_queue.empty())
     {
-        PCB* task = pq.top();
 
-        // compute wait time into process        
+        //get next job in the queue
+        PCB* task = priority_queue.front();
+
+        // compute turnaround and wait time
         task->updateWait(waitTime);
-        task-> updateTurnaround();
+        task->updateTurnaround();
 
         // increment wait time
         waitTime += task->getCpuBurst();
-        
-        // get first process and run to completion
+
+        // run job until completion
         Functions::run_task(task, task->getCpuBurst());
-        
+
         // change state to terminated
         task->setTerminated();
 
-        // remove process from ready queue
-        pq.pop();
+        // remove process from the queue
+        priority_queue.erase(priority_queue.begin());
     }
 
     // Show statistics
-    Functions::calculateAverages(myTable, numProcesses);
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);
 
     return 0;
 }

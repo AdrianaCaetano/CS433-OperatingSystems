@@ -11,6 +11,7 @@
  *  [name], [priority], [CPU burst]
  */
 
+#include <algorithm>   //sort function
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "PCB.h"
 
@@ -45,16 +47,13 @@ int main(int argc, char *argv[])
     int priority;
     int burst;
 
-    // Array to hold PCBs
-    int numProcesses = 8;
-    PCB myTable[numProcesses];
+    // Container to hold PCBs
+    vector<PCB> myTable;
 
     // open the input file
     std::ifstream infile(argv[1]);
     string line;
 
-    // iterator to populate table
-    int i =0;
     while(getline(infile, line) ) {
         std::istringstream ss (line);
         // Get the task name
@@ -70,32 +69,56 @@ int main(int argc, char *argv[])
         burst = std::stoi(token);
 	
 	// Save PCB into table
-        myTable[i].setID(name);    
-        myTable[i].setPriority(priority);    
-        myTable[i].setCpuBurst(burst);    
-        myTable[i].displayPCB();
-        cout << endl;
-        i++;    
+        myTable.push_back(PCB(name, priority, burst));
+    }
+ 
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
+    {
+        p.displayPCB();
+        cout<<endl;
+    }   
+
+    // Ready Queue FCFS
+    vector<PCB*> fcfs_queue;
+    for (int i = 0; i < myTable.size(); i++)
+    {
+        fcfs_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
     }
 
-    for (int i = 0; i < numProcesses; i++) 
-    {   
-        // run task until completion
-//        Functions::run_task(myTable[i], myTable[i].getCpuBurst());
+    // Sort queue by name/order arrival
+    sort(fcfs_queue.begin(), fcfs_queue.end(), &Functions::compareName);
+
+    // variable to hold wait time
+    int waitTime = 0;
+
+    cout << endl << "Run FCFS - First Come First Serve:" << endl;
+    while (!fcfs_queue.empty())
+    {
+        // get next process in the queue
+        PCB* job = fcfs_queue.front();
 
         // compute wait time
-        int waitTime = 0;
-        for (int j = 0; j < i; j++)
-        { 
-            waitTime += myTable[j].getCpuBurst();
-        }
-        
-        // update wait and turnaround times
-        myTable[i].updateWait(waitTime);
-        myTable[i].updateTurnaround();
+        job->updateWait(waitTime);
+        job->updateTurnaround();
+
+        // increment wait time
+        waitTime += job->getCpuBurst();
+
+        // run process to completion
+        Functions::run_task(job, job->getCpuBurst());
+
+        // change state to terminated
+        job->setTerminated();
+
+        // remove process from the queue
+        fcfs_queue.erase(fcfs_queue.begin());
     }
-    
-    Functions::calculateAverages(myTable, numProcesses);    
+
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);
 
     return 0;
 }

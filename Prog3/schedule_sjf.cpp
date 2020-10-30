@@ -12,6 +12,7 @@
  * [name], [priority], [CPU burst]
  */
 
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,23 +20,12 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <queue>
+#include <vector>
 
 #include "PCB.h"
 
 using namespace std;
-/*
-bool operator<(const PCB& p1, PCB& p2)
-{
-    // Convert to negative to reverse priority scheduling for 
-    // cpu time burst
-    int negativeBurstP1 = -1 * p1.getCpuBurst();
-    int negativeBurstP2 = -1 * p2.getCpuBurst();
 
-    // The smaller value would have higher priority
-    return negativeBurstP1 < negativeBurstP2;
-}
-*/
 int main(int argc, char *argv[])
 {
 
@@ -64,10 +54,8 @@ int main(int argc, char *argv[])
     int priority;
     int burst;
 
-    // create a table object to save 10 processes
-    //PCBTable myTable(10);
-    int numProcesses = 10;
-    PCB myTable[numProcesses];
+    // create a table to save processes
+    vector<PCB> myTable;
 
     // open the input file
     std::ifstream infile(argv[1]);
@@ -88,36 +76,58 @@ int main(int argc, char *argv[])
         burst = std::stoi(token);
 
 	// Save pcb into table
-	int i = 0;
-        myTable[i].setID(name);
-        myTable[i].setPriority(priority);
-        myTable[i].setCpuBurst(burst);
-        myTable[i].displayPCB();
-        i++;
+        myTable.push_back(PCB(name, priority,burst));	
+    }
+
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
+    {
+        p.displayPCB();
+        cout<<endl;
     }
     
     // ReadyQueue for SJF 
-    priority_queue<PCB> sjf_queue;
-   /* 
-    for (int i = 0; i < numProcesses; i++) 
+    vector<PCB*> sjf_queue;
+    for (int i = 0; i < myTable.size(); i++) 
     {
-        // insert a process in the queue
-        sjf_queue.push(myTable[i]);       
-    }
-    
-    // Test if queue is correct
-    while(!sjf_queue.empty()
-    {
-       PCB process = sjf_queue.top();
-       sjf_queue.pop();
-       process.displayPCB();
-  
+        sjf_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
     }
 
-*/
+    // Sort queue by burst time
+    sort(sjf_queue.begin(),sjf_queue.end(), &Functions::compareCpuBurst);
 
+    // variable to hold wait time
+    int waitTime = 0;
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    // Run processes in the queue
+    cout << endl << "Run SJF - Short Job First:" << endl;
+    while(!sjf_queue.empty())
+    {
+        // get next process in the queue
+        PCB* process = sjf_queue.front();  // vector queue
+
+        // compute wait time
+        process->updateWait(waitTime);
+        process->updateTurnaround();
+
+        //increment wait time 
+        waitTime += process->getCpuBurst();
+
+        // run process to completion
+        Functions::run_task(process, process->getCpuBurst());
+
+        // change state to terminated
+        process->setTerminated();
+
+        // remove process from the queue
+        sjf_queue.erase(sjf_queue.begin());  // vector queue
+    }
+ 
+    // Show statistics
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);  //VECTOR
 
     return 0;
 }

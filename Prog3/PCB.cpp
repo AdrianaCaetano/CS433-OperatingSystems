@@ -6,6 +6,7 @@
  * File: PCB.cpp
  */
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -73,12 +74,12 @@ void PCB::setCpuBurst(int burst)
 
 int PCB::getCpuBurst() 
 { 
-    return this->cpuBurst;
+    return cpuBurst;
 }
 
 int PCB::getRuntime() 
 {
-    return this->runtime;
+    return runtime;
 }
 
 void PCB::updateRuntime(int timeSlice)
@@ -109,7 +110,7 @@ void PCB::updateRuntime(int timeSlice)
 
 int PCB::getTurnaround() 
 {
-    return this->turnaround;
+    return turnaround;
 }
         
 void PCB::updateTurnaround()
@@ -119,7 +120,7 @@ void PCB::updateTurnaround()
 
 int PCB::getWait()
 {
-    return this->wait;
+    return wait;
 }
 
 void PCB::updateWait(int waitTime)
@@ -184,35 +185,6 @@ void PCB::displayCompletePCB()
 } 
 
 
-//***** PCB Table *****
-PCBTable::PCBTable() {}
-
-PCBTable::PCBTable(int size) 
-{
-    tablePCB = new PCB[size];	// array of PCBs
-}
-
-PCBTable::~PCBTable() 
-{ 
-    delete [] tablePCB; 	        // delete array
-}
-
-// show all processes in the table
-void PCBTable::showTable()
-{
-    for (auto i=0; i < size; i++)
-    {
-        tablePCB[i].displayPCB();
-        cout << endl;
-    }
-}
-
-int PCBTable::getSize()
-{
-    return size;
-}
-
-
 // ***** General Functions *****
 
 void Functions::show_header(string algorithm) 
@@ -225,23 +197,6 @@ void Functions::show_header(string algorithm)
     cout << "Description: Scheduling Algorithm - " << algorithm << "\n";
     cout << "\n======================================================================\n\n";
 }
-
-/* Working function on FCFS
-void Functions::run_task(PCB& p1, int time) 
-{
-    // set state to running
-    p1.setRunning();
-
-    // update runtime
-    p1.updateRuntime(time);
-
-    // Print process runtime
-    cout << p1.getState();
-    cout << " task = ";
-    p1.displayPCB();
-    cout << " for " << time << " units.\n";    
-}
-*/
 
 void Functions::run_task(PCB* p1, int time) 
 {
@@ -258,19 +213,40 @@ void Functions::run_task(PCB* p1, int time)
     cout << " for " << time << " units.\n";    
 }
 
-void Functions::calculateAverages(PCB table[], int size)
+
+// Function for VECTOR table
+void Functions::calculateAverages(const vector<PCB> &table)
 {   
     int totalTurnaround = 0;
     int totalWait=0;
-    for (int i = 0; i < size; i++) 
+    int size = table.size();
+    for (auto p: table)
     {
-        cout << table[i].getID() << " turnaround time = " << table[i].getTurnaround();
-        cout << ", waiting time = " << table[i].getWait() << endl;
+        cout << p.getID() << " turnaround time = " << p.getTurnaround();
+        cout << ", waiting time = " << p.getWait() << endl;
 
-        totalTurnaround += table[i].getTurnaround();
-        totalWait += table[i].getWait();
+        totalTurnaround += p.getTurnaround();
+        totalWait += p.getWait();
     }
     cout << "Average turn-around time = " << double(totalTurnaround) / size;
-    cout << ", average waiting time = " << double(totalWait) / size << endl;
+    cout << ", average waiting time = " << double(totalWait) / size << endl << endl;
+}
+
+//Vector functions to compare and sort vector
+bool Functions::compareName(PCB* lhs, PCB* rhs)
+{ 
+    // first has the lower value
+    return lhs->getID() < rhs->getID();
+}
+
+bool Functions::comparePriority(PCB* lhs,PCB* rhs)
+{
+    // first has the higher value
+    return lhs->getPriority() > rhs->getPriority();
+}
+bool Functions::compareCpuBurst (PCB* lhs, PCB* rhs)
+{ 
+    // first has the lower value
+    return lhs->getCpuBurst() < rhs->getCpuBurst();
 }
 

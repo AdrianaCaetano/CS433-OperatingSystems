@@ -105,25 +105,6 @@ class PCB
 	void displayCompletePCB();
 };
 
-/*
- * A container of all PCB elements in the system.
- */
-class PCBTable 
-{
-    private:
-        int size; 
-        PCB* tablePCB;	// PCB array
-
-    public:
-	// Constructor and Destructor
-	PCBTable();
-        PCBTable(int size);
-        ~PCBTable();
-
-        // Print table's elements
-        void showTable();
-        int getSize();
-};
 
 /*
  * General Functions
@@ -135,6 +116,13 @@ namespace Functions
     //void run_task(PCB& p1, int time);
     void run_task(PCB* p1, int time);
 
-    void calculateAverages(PCB table[], int size); 
+    void calculateAverages(const vector<PCB> &table); //VECTOR
+
+    //vector functions
+    bool compareName(PCB* lhs, PCB* rhs);
+
+    bool comparePriority(PCB* lhs, PCB* rhs);
+
+    bool compareCpuBurst(PCB* lhs, PCB* rhs);
 }
 
