@@ -132,7 +132,8 @@ namespace Functions
 {
     void show_header(string algorithm);
 
-    void run_task(PCB& p1, int time);
+    //void run_task(PCB& p1, int time);
+    void run_task(PCB* p1, int time);
 
     void calculateAverages(PCB table[], int size); 
 }

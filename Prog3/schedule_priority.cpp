@@ -9,33 +9,35 @@
 
 
 /**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
  * The input file is in the format:
- *
  *  [name], [priority], [CPU burst]
  */
 
+#include <fstream>
+#include <iostream>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include <fstream>
 #include <sstream>
+#include <string.h>
 #include <string>
+
+#include "PCB.h"
 
 using namespace std;
 
+// Overload operator< to order the queue using pcb priority
+bool operator<(PCB& P1, PCB& P2)
+{
+    // higher value = higher priority
+    int p1 = P1.getPriority();
+    int p2 = P2.getPriority();
+    return p1 < p2;
+}
+
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
+    Functions::show_header("Priority");
     
     int QUANTUM = 10;
     // Check that input file is provided at command line
@@ -54,9 +56,16 @@ int main(int argc, char *argv[])
     int priority;
     int burst;
 
+    // Container to hold processes
+    int numProcesses = 8;
+    PCB myTable[numProcesses];
+
     // open the input file
     std::ifstream infile(argv[1]);
     string line;
+   
+    // iterator to populate container 
+    int i = 0;
     while(getline(infile, line) ) {
         std::istringstream ss (line);
         // Get the task name
@@ -70,14 +79,56 @@ int main(int argc, char *argv[])
         // Get the task burst length 
         getline(ss, token, ',');
         burst = std::stoi(token);
+    
+        // Save PCBs into table
+        myTable[i].setID(name);
+        myTable[i].setPriority(priority);
+        myTable[i].setCpuBurst(burst);
+        myTable[i].displayPCB();
+        cout << endl;
+        i++;
+    }
+    
+  //  myTable.showTable();
+
+    // Priority queue from std library
+    priority_queue<PCB*> pq;
+    for (int i = 0; i < numProcesses; i++)
+    {
+        // insert processes into queue
+        pq.push(&myTable[i]);
         
-        cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
+        // change state to ready
+        myTable[i].setReady();
     }
 
+    // variable to hold wait time
+    int waitTime = 0;       
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    // run processes from priority queue
+    while (!pq.empty()) 
+    {
+        PCB* task = pq.top();
+
+        // compute wait time into process        
+        task->updateWait(waitTime);
+        task-> updateTurnaround();
+
+        // increment wait time
+        waitTime += task->getCpuBurst();
+        
+        // get first process and run to completion
+        Functions::run_task(task, task->getCpuBurst());
+        
+        // change state to terminated
+        task->setTerminated();
+
+        // remove process from ready queue
+        pq.pop();
+    }
+
+    // Show statistics
+    Functions::calculateAverages(myTable, numProcesses);
 
     return 0;
 }

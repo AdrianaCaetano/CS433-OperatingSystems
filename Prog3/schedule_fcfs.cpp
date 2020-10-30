@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < numProcesses; i++) 
     {   
         // run task until completion
-        Functions::run_task(myTable[i], myTable[i].getCpuBurst());
+//        Functions::run_task(myTable[i], myTable[i].getCpuBurst());
 
         // compute wait time
         int waitTime = 0;

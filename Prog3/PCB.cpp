@@ -53,7 +53,7 @@ void PCB::setID(string id)
 
 string PCB::getID()
 {
-    return this->id;
+    return id;
 }
 
 void PCB::setPriority(int priority) 
@@ -63,7 +63,7 @@ void PCB::setPriority(int priority)
 
 int PCB::getPriority()    
 {
-    return this->priority;
+    return priority;
 }
 
 void PCB::setCpuBurst(int burst)
@@ -226,6 +226,7 @@ void Functions::show_header(string algorithm)
     cout << "\n======================================================================\n\n";
 }
 
+/* Working function on FCFS
 void Functions::run_task(PCB& p1, int time) 
 {
     // set state to running
@@ -238,6 +239,22 @@ void Functions::run_task(PCB& p1, int time)
     cout << p1.getState();
     cout << " task = ";
     p1.displayPCB();
+    cout << " for " << time << " units.\n";    
+}
+*/
+
+void Functions::run_task(PCB* p1, int time) 
+{
+    // set state to running
+    p1->setRunning();
+
+    // update runtime
+    p1->updateRuntime(time);
+
+    // Print process runtime
+    cout << p1->getState();
+    cout << " task = ";
+    p1->displayPCB();
     cout << " for " << time << " units.\n";    
 }
 
