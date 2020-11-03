@@ -133,5 +133,7 @@ namespace Functions
     bool comparePriority(PCB* lhs, PCB* rhs);
 
     bool compareCpuBurst(PCB* lhs, PCB* rhs);
+
+    bool check_number(string str);
 }
 

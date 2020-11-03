@@ -39,7 +39,15 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantun must be a number." << endl;
+            exit(1);
+        }
     }
 
     // Save file name from input command
@@ -65,9 +73,6 @@ int main(int argc, char *argv[])
         fcfs_queue.push_back(&myTable[i]);
         myTable[i].setReady();
     }
-
-    // Sort queue by name/order arrival
-    sort(fcfs_queue.begin(), fcfs_queue.end(), &Functions::compareName);
 
     // variable to hold wait time
     int waitTime = 0;

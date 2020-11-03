@@ -221,8 +221,8 @@ vector<PCB> Functions::createTable(string file)
     // Read task name, priority and burst length from the input file 
     string name;
     int priority;
-    int burst
-;
+    int burst;
+
     // open the input file
     ifstream infile(file);
     string line;
@@ -230,31 +230,60 @@ vector<PCB> Functions::createTable(string file)
     // check if file opened
     if (!infile.is_open()) 
     {
-        cout << "Failed to open file " << file << endl; 
+        cerr << "Failed to open file " << file << endl; 
         exit(1);
     }
     else 
     {
-        cout << "Read from file\n";
+        cout << "Read from file " << file << endl << endl;
         // each line info = PCB
-        while(getline(infile, line) ) {
-            istringstream ss (line);
-            // Get the task name
-            getline(ss, name, ',');
-        
-            // Get the task priority 
-            string token;
-            getline(ss, token, ',');
-            priority = std::stoi(token);
+        while(getline(infile, line) ) 
+        {
+            if (!line.empty())
+            {
+                istringstream ss (line);
 
-            // Get the task burst length 
-            getline(ss, token, ',');
-            burst = std::stoi(token);
+                // Get the task name
+                getline(ss, name, ',');
+   
+                // Get the task priority 
+                string token;
+                getline(ss, token, ',');
+
+                //erase whitespaces
+                token.erase(find(token.begin(), token.end(), ' '));
+ 
+                if (Functions::check_number(token)) 
+                {
+                    // Token is a number
+                    priority = std::stoi(token);
+                } 
+                else 
+                {
+                    cerr << "Input for priority is not a number\n";
+                    exit(1);
+                }
+                // Get the task burst length 
+                getline(ss, token, ',');
+
+                token.erase(find(token.begin(), token.end(), ' '));//erase whitespaces
+
+                if (Functions::check_number(token)) 
+                {
+                    // Token is a number
+                    burst = std::stoi(token);
+                } 
+                else 
+                {
+                    cerr << "Input for CPU burst is not a number\n";
+                    exit(1);
+                }
     
-            // Save PCB into table
-            table.push_back(PCB(name, priority, burst));    
+                // Save PCB into table
+                table.push_back(PCB(name, priority, burst));    
+            }
         }
-     }
+    }
     return table;
 }
 
@@ -321,3 +350,14 @@ bool Functions::compareCpuBurst (PCB* lhs, PCB* rhs)
     return lhs->getCpuBurst() < rhs->getCpuBurst();
 }
 
+bool Functions::check_number(string str)
+{ 
+    for (int i = 0; i < str.length(); i++) 
+    {   
+        if (isdigit(str[i]) == false) 
+        { 
+            return false; 
+        }
+    }
+    return true;   
+}

@@ -1,4 +1,3 @@
-
 /*
  * Programming Assignment 3 - CS 433
  * Description: Scheduling Algorithms
@@ -40,7 +39,15 @@ int main(int argc, char *argv[])
     
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantum must be a number." << endl;
+            exit(1);
+        }
     }
 
     string file = argv[1];
@@ -63,9 +70,6 @@ int main(int argc, char *argv[])
         rr_queue.push_back(&myTable[i]);
         myTable[i].setReady();
     }
-    
-    // sort ready queue by name/arrival order
-    sort(rr_queue.begin(), rr_queue.end(), &Functions::compareName);
 
     // Run process in the queue for the time slice
     cout << endl << "Run RR - Round Robin with time quantum of " << QUANTUM << endl;

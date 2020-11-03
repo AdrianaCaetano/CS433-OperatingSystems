@@ -1,4 +1,3 @@
-
 /*
  * Programming Assignment 3 - CS 433
  * Description: Scheduling Algorithms
@@ -41,7 +40,15 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantum must be a number." << endl;
+            exit(1);
+        }
     }
 
     // save file name from input
@@ -66,14 +73,14 @@ int main(int argc, char *argv[])
         myTable[i].setReady();
     }
   
-    // sort queue by priority
+    // sort queue by priority = highest first
     sort(priority_queue.begin(), priority_queue.end(), &Functions::comparePriority);
 
     // variable to hold wait time
     int waitTime = 0;
 
     // Run tasks in the queue
-    cout << endl << "Run Priority (higher value = higher priority):" <<endl;
+    cout << endl << "Run Hieghest Priority First:" <<endl;
     while(!priority_queue.empty())
     {
 
