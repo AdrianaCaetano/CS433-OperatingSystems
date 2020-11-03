@@ -37,40 +37,16 @@ int main(int argc, char *argv[])
         cerr << "Usage: " << argv[0] << " <input_file> [<time_quantum>]" << endl;
         exit(1);
     }
-
+    
     // Read the time quantum if provided.
     if(argc >= 3) {
         QUANTUM = atoi(argv[2]);
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    string file = argv[1];
 
     // Create a table to hold PCBs
-    vector<PCB> myTable;
-
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
-
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-    
-        // Save PCB into table
-        myTable.push_back(PCB(name, priority, burst));    
-    }
+    vector<PCB> myTable = Functions::createTable(file);
 
     // Print table
     cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
@@ -91,30 +67,27 @@ int main(int argc, char *argv[])
     // sort ready queue by name/arrival order
     sort(rr_queue.begin(), rr_queue.end(), &Functions::compareName);
 
-    // variable to hold wait time
-    int waitTime = 0;
-
     // Run process in the queue for the time slice
     cout << endl << "Run RR - Round Robin with time quantum of " << QUANTUM << endl;
+    
+    // variable to hold time
+    int time = 0;
     while (!rr_queue.empty())
     {
         // get first job in the queue to run
         PCB* job = rr_queue.front();
-        
-        // compute wait and turnaround time
-        job->updateWait(waitTime);
-        job->updateTurnaround();
-
-        // increment wait time
-        if (job->getCpuBurst() - job->getTurnaround() < QUANTUM) 
+    
+        // Increment time
+        int remainder = job->getCpuBurst() - job->getRuntime();
+        if (QUANTUM < remainder) 
         { 
-            waitTime += QUANTUM;
+            time += QUANTUM;
         } 
         else
         {
-            waitTime = waitTime + (job->getCpuBurst() - job->getTurnaround());
-        }
-        
+            time += remainder;
+        } 
+
         // run process for the time quantum
         Functions::run_task(job, QUANTUM);
 
@@ -127,11 +100,15 @@ int main(int argc, char *argv[])
             // job is complete
             job->setTerminated();
             cout << "Task " << job->getID() << " finished." << endl;
+
+            // compute wait and turnaround time
+            job->updateTurnaroundRR(time);
+            job->updateWaitRR();
         } 
         else
         {
             // job needs to go back to the end of ready queue
-            job->setReady();
+            job->setWaiting();
             rr_queue.push_back(job);
         }
     }

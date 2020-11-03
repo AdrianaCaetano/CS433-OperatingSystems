@@ -44,36 +44,12 @@ int main(int argc, char *argv[])
         QUANTUM = atoi(argv[2]);
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // save file name from input
+    string file = argv[1];
 
-    // Container to hold processes
-    vector<PCB> myTable;
+    // Create a container to hold processes from file
+    vector<PCB> myTable = Functions::createTable(file);
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-   
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
-
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        // save PCB into table
-        myTable.push_back(PCB(name, priority, burst));
-    }
-    
     // Print table
     cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
     for (auto p: myTable)

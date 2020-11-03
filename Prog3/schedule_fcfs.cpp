@@ -22,12 +22,12 @@
 #include <vector>
 
 #include "PCB.h"
+//#include "schedule_fcfs.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-
     Functions::show_header("FCFS");
 
     int QUANTUM = 10;
@@ -42,35 +42,11 @@ int main(int argc, char *argv[])
         QUANTUM = atoi(argv[2]);
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // Save file name from input command
+    string file = argv[1];
 
     // Container to hold PCBs
-    vector<PCB> myTable;
-
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
-
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-	
-	// Save PCB into table
-        myTable.push_back(PCB(name, priority, burst));
-    }
+    vector<PCB> myTable = Functions::createTable(file);
  
     // Print table
     cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
@@ -78,8 +54,10 @@ int main(int argc, char *argv[])
     {
         p.displayPCB();
         cout<<endl;
-    }   
+    } 
 
+ //   FCFS::run(&myTable);
+  
     // Ready Queue FCFS
     vector<PCB*> fcfs_queue;
     for (int i = 0; i < myTable.size(); i++)
