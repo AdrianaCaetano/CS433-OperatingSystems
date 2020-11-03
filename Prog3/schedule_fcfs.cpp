@@ -7,15 +7,11 @@
  */
 
 /**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
  * The input file is in the format:
- *
  *  [name], [priority], [CPU burst]
  */
 
+#include <algorithm>   //sort function
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,18 +19,17 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
+
+#include "PCB.h"
+//#include "schedule_fcfs.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
-    
+    Functions::show_header("FCFS");
+
     int QUANTUM = 10;
     // Check that input file is provided at command line
     if(argc < 2 ) {
@@ -44,38 +39,69 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantun must be a number." << endl;
+            exit(1);
+        }
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // Save file name from input command
+    string file = argv[1];
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
+    // Container to hold PCBs
+    vector<PCB> myTable = Functions::createTable(file);
+ 
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
+    {
+        p.displayPCB();
+        cout<<endl;
+    } 
 
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
+ //   FCFS::run(&myTable);
+  
+    // Ready Queue FCFS
+    vector<PCB*> fcfs_queue;
+    for (int i = 0; i < myTable.size(); i++)
+    {
+        fcfs_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
     }
 
+    // variable to hold wait time
+    int waitTime = 0;
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    cout << endl << "Run FCFS - First Come First Serve:" << endl;
+    while (!fcfs_queue.empty())
+    {
+        // get next process in the queue
+        PCB* job = fcfs_queue.front();
+
+        // compute wait time
+        job->updateWait(waitTime);
+        job->updateTurnaround();
+
+        // increment wait time
+        waitTime += job->getCpuBurst();
+
+        // run process to completion
+        Functions::run_task(job, job->getCpuBurst());
+
+        // change state to terminated
+        job->setTerminated();
+
+        // remove process from the queue
+        fcfs_queue.erase(fcfs_queue.begin());
+    }
+
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);
 
     return 0;
 }

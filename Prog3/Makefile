@@ -6,9 +6,9 @@ CC = g++			# use g++ for compiling c++ code or gcc for c code
 CFLAGS = -g -Wall -std=c++11	# compilation flags: -g for debugging. Change to -O or -O2 for optimized code.
 LIB = -lm			# linked libraries	
 LDFLAGS = -L.			# link flags
-PROG = sjf fcfs rr priority		# target executables (output)
+PROG = sjf fcfs rr priority priority_rr		# target executables (output)
 SRCS = schedule_fcfs.cpp schedule_rr.cpp schedule_sjf.cpp schedule_priority.cpp \
-	PCB.cpp # .c or .cpp source files.
+	schedule_priority_rr.cpp PCB.cpp # .c or .cpp source files.
 OBJ = $(SRCS:.cpp=.o) 	# object files for the target. Add more to this and next lines if there are more than one source files.
 
 all : $(PROG) depend
@@ -24,6 +24,9 @@ sjf: schedule_sjf.o PCB.o
 
 priority: schedule_priority.o PCB.o
 	$(CC) -o priority schedule_priority.o PCB.o $(LDFLAGS) $(LIB)
+
+priority_rr: schedule_priority_rr.o PCB.o
+	$(CC) -o priority_rr schedule_priority_rr.o PCB.o $(LDFLAGS) $(LIB)
 
 .cpp.o:
 	$(CC) -c $(CFLAGS) $< -o $@

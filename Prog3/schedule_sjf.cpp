@@ -7,16 +7,12 @@
  */
 
 
-/**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
+/*
  * The input file is in the format:
- *
- *  [name], [priority], [CPU burst]
+ * [name], [priority], [CPU burst]
  */
 
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,19 +20,19 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
+
+#include "PCB.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
-    
+
+    Functions::show_header("SJF");
+
     int QUANTUM = 10;
+    
     // Check that input file is provided at command line
     if(argc < 2 ) {
         cerr << "Usage: " << argv[0] << " <input_file> [<time_quantum>]" << endl;
@@ -45,38 +41,72 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantun must be a number." << endl;
+            exit(1);
+        }
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // Save file name from input
+    string file = argv[1];
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
+    // create a table to save processes
+    vector<PCB> myTable = Functions::createTable(file);
 
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
+    {
+        p.displayPCB();
+        cout<<endl;
+    }
+    
+    // ReadyQueue for SJF 
+    vector<PCB*> sjf_queue;
+    for (int i = 0; i < myTable.size(); i++) 
+    {
+        sjf_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
     }
 
+    // Sort queue by cpu burst time = short first
+    sort(sjf_queue.begin(),sjf_queue.end(), &Functions::compareCpuBurst);
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    // variable to hold wait time
+    int waitTime = 0;
+
+    // Run processes in the queue
+    cout << endl << "Run SJF - Short Job First:" << endl;
+    while(!sjf_queue.empty())
+    {
+        // get next process in the queue
+        PCB* process = sjf_queue.front();  // vector queue
+
+        // compute wait time
+        process->updateWait(waitTime);
+        process->updateTurnaround();
+
+        //increment wait time 
+        waitTime += process->getCpuBurst();
+
+        // run process to completion
+        Functions::run_task(process, process->getCpuBurst());
+
+        // change state to terminated
+        process->setTerminated();
+
+        // remove process from the queue
+        sjf_queue.erase(sjf_queue.begin());  // vector queue
+    }
+ 
+    // Show statistics
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);  //VECTOR
 
     return 0;
 }

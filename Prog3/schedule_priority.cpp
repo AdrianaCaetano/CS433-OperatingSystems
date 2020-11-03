@@ -1,4 +1,3 @@
-
 /*
  * Programming Assignment 3 - CS 433
  * Description: Scheduling Algorithms
@@ -9,33 +8,28 @@
 
 
 /**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
  * The input file is in the format:
- *
  *  [name], [priority], [CPU burst]
  */
 
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include <fstream>
 #include <sstream>
+#include <string.h>
 #include <string>
+#include <vector>
+
+#include "PCB.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
+    Functions::show_header("Priority");
     
     int QUANTUM = 10;
     // Check that input file is provided at command line
@@ -46,38 +40,73 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantum must be a number." << endl;
+            exit(1);
+        }
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // save file name from input
+    string file = argv[1];
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
+    // Create a container to hold processes from file
+    vector<PCB> myTable = Functions::createTable(file);
 
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p: myTable)
+    {
+        p.displayPCB();
+        cout<<endl;
     }
 
+    // Create a priority ready queue with the processes on the table
+    vector<PCB*> priority_queue;
+    for (int i = 0; i < myTable.size(); i++)
+    { 
+        priority_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
+    }
+  
+    // sort queue by priority = highest first
+    sort(priority_queue.begin(), priority_queue.end(), &Functions::comparePriority);
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    // variable to hold wait time
+    int waitTime = 0;
+
+    // Run tasks in the queue
+    cout << endl << "Run Hieghest Priority First:" <<endl;
+    while(!priority_queue.empty())
+    {
+
+        //get next job in the queue
+        PCB* task = priority_queue.front();
+
+        // compute turnaround and wait time
+        task->updateWait(waitTime);
+        task->updateTurnaround();
+
+        // increment wait time
+        waitTime += task->getCpuBurst();
+
+        // run job until completion
+        Functions::run_task(task, task->getCpuBurst());
+
+        // change state to terminated
+        task->setTerminated();
+
+        // remove process from the queue
+        priority_queue.erase(priority_queue.begin());
+    }
+
+    // Show statistics
+    cout << endl << "Show statistics:" << endl;
+    Functions::calculateAverages(myTable);
 
     return 0;
 }

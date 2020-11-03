@@ -1,4 +1,3 @@
-
 /*
  * Programming Assignment 3 - CS 433
  * Description: Scheduling Algorithms
@@ -9,15 +8,11 @@
 
 
 /**
- * Driver program 
- * 
- * Add other data structures and .cpp and .h files as needed.
- * 
  * The input file is in the format:
- *
  *  [name], [priority], [CPU burst]
  */
 
+#include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,59 +20,106 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
+
+#include "PCB.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    std::cout << "CS 433 Programming assignment 3" << std::endl;
-    std::cout << "Author: xxxxxx and xxxxxxx" << std::endl;
-    std::cout << "Date: xx/xx/20xx" << std::endl;
-    std::cout << "Course: CS433 (Operating Systems)" << std::endl;
-    std::cout << "Description : **** " << std::endl;
-    std::cout << "=================================" << std::endl;
-    
+    Functions::show_header("RR");
+
     int QUANTUM = 10;
     // Check that input file is provided at command line
     if(argc < 2 ) {
         cerr << "Usage: " << argv[0] << " <input_file> [<time_quantum>]" << endl;
         exit(1);
     }
-
+    
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantum must be a number." << endl;
+            exit(1);
+        }
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    string file = argv[1];
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
+    // Create a table to hold PCBs
+    vector<PCB> myTable = Functions::createTable(file);
 
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        cout << name << " " << priority << " " << burst << endl;
-        // TODO: add the task to the scheduler's ready queue
-        // You will need a data structure, i.e. PCB, to represent a task 
+    // Print table
+    cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
+    for (auto p : myTable)
+    {
+        p.displayPCB();
+        cout << endl;
     }
 
+    // Ready Queue
+    vector<PCB*> rr_queue;
+    for (int i = 0; i < myTable.size(); i++ ) 
+    {
+        rr_queue.push_back(&myTable[i]);
+        myTable[i].setReady();
+    }
 
-    // TODO: Add your code to run the scheduler and print out statistics
+    // Run process in the queue for the time slice
+    cout << endl << "Run RR - Round Robin with time quantum of " << QUANTUM << endl;
+    
+    // variable to hold time
+    int time = 0;
+    while (!rr_queue.empty())
+    {
+        // get first job in the queue to run
+        PCB* job = rr_queue.front();
+    
+        // Increment time
+        int remainder = job->getCpuBurst() - job->getRuntime();
+        if (QUANTUM < remainder) 
+        { 
+            time += QUANTUM;
+        } 
+        else
+        {
+            time += remainder;
+        } 
+
+        // run process for the time quantum
+        Functions::run_task(job, QUANTUM);
+
+        // remove process from queue
+        rr_queue.erase(rr_queue.begin()); 
+
+       // change process state 
+        if (job->getCpuBurst() == job->getRuntime())
+        {
+            // job is complete
+            job->setTerminated();
+            cout << "Task " << job->getID() << " finished." << endl;
+
+            // compute wait and turnaround time
+            job->updateTurnaroundRR(time);
+            job->updateWaitRR();
+        } 
+        else
+        {
+            // job needs to go back to the end of ready queue
+            job->setWaiting();
+            rr_queue.push_back(job);
+        }
+    }
+
+    // Show statistics 
+    cout << endl << "Show statistics:" << endl ;
+    Functions::calculateAverages(myTable);
 
     return 0;
 }
