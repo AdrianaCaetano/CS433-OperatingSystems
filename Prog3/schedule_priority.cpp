@@ -1,4 +1,3 @@
-
 /*
  * Programming Assignment 3 - CS 433
  * Description: Scheduling Algorithms
@@ -41,39 +40,23 @@ int main(int argc, char *argv[])
 
     // Read the time quantum if provided.
     if(argc >= 3) {
-        QUANTUM = atoi(argv[2]);
+        if (Functions::check_number(argv[2])) 
+        {
+            QUANTUM = atoi(argv[2]);
+        }
+        else 
+        {
+            cerr << "Time quantum must be a number." << endl;
+            exit(1);
+        }
     }
 
-    // Read task name, priority and burst length from the input file 
-    string name;
-    int priority;
-    int burst;
+    // save file name from input
+    string file = argv[1];
 
-    // Container to hold processes
-    vector<PCB> myTable;
+    // Create a container to hold processes from file
+    vector<PCB> myTable = Functions::createTable(file);
 
-    // open the input file
-    std::ifstream infile(argv[1]);
-    string line;
-   
-    while(getline(infile, line) ) {
-        std::istringstream ss (line);
-        // Get the task name
-        getline(ss, name, ',');
-        
-        // Get the task priority 
-        string token;
-        getline(ss, token, ',');
-        priority = std::stoi(token);
-
-        // Get the task burst length 
-        getline(ss, token, ',');
-        burst = std::stoi(token);
-        
-        // save PCB into table
-        myTable.push_back(PCB(name, priority, burst));
-    }
-    
     // Print table
     cout << "PCB Table: [name] [priority] [CPU burst]" << endl;
     for (auto p: myTable)
@@ -90,14 +73,14 @@ int main(int argc, char *argv[])
         myTable[i].setReady();
     }
   
-    // sort queue by priority
+    // sort queue by priority = highest first
     sort(priority_queue.begin(), priority_queue.end(), &Functions::comparePriority);
 
     // variable to hold wait time
     int waitTime = 0;
 
     // Run tasks in the queue
-    cout << endl << "Run Priority (higher value = higher priority):" <<endl;
+    cout << endl << "Run Hieghest Priority First:" <<endl;
     while(!priority_queue.empty())
     {
 

@@ -1,4 +1,4 @@
-#Producer-Consumer Problem (100 points)
+# Producer-Consumer Problem (100 points)
 
 Implement programming project 4 "The Producer-Consumer Problem" in chapter 7 of the textbook
 (P43 to P45 of eTextbook)1. You should solve the producer-consumer problem using the Pthreads
@@ -24,7 +24,7 @@ sleep more than one second. You may use the usleep() function like
 “usleep(rand()%1000000);”, where usleep() function sleeps for some number of
 microseconds.
 
-##Extra Credits:
+## Extra Credits:
 You may gain extra credits for this assignment by doing more work beyond the requirements, for
 example implementingthe boundedbuffer as amonitorusingmutex andconditionvariables or other
 things interesting or creative. The extra credit depends on the amount of extra work you do but will

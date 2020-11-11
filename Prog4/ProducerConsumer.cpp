@@ -1,5 +1,5 @@
 #include <stdlib.h> /* required for rand() */
-#include "Buffer.h"
+#include "buffer.h"
 #include "ProducerConsumer.h"
 
 void *producer(void *param) 

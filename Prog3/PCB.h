@@ -74,11 +74,17 @@ class PCB
 	// Update PCB turnaround time
         void updateTurnaround();
 
+	// Update PCB turnaround time for RR
+        void updateTurnaroundRR(int finishTime);
+
         // get PCB wait time
         int getWait();
 
 	// Update PCB wait time
         void updateWait(int waited);
+
+	// Update PCB wait time for RR
+        void updateWaitRR();
 
 	// Get PCB state
         string getState();
@@ -113,6 +119,9 @@ namespace Functions
 {
     void show_header(string algorithm);
 
+    // Create a table of PCB from file information
+    vector<PCB> createTable(string file);
+
     //void run_task(PCB& p1, int time);
     void run_task(PCB* p1, int time);
 
@@ -124,5 +133,7 @@ namespace Functions
     bool comparePriority(PCB* lhs, PCB* rhs);
 
     bool compareCpuBurst(PCB* lhs, PCB* rhs);
+
+    bool check_number(string str);
 }
 

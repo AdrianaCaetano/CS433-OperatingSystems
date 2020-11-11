@@ -7,7 +7,11 @@
  */
 
 #include <algorithm>
+#include <cctype>  // isdigit()
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
+#include <sstream>  
 #include <string>
 #include <vector>
 
@@ -90,14 +94,15 @@ void PCB::updateRuntime(int timeSlice)
             // run for the duration of the time slice
        	    this->runtime = timeSlice; 
         }
-        else if (cpuBurst <= timeSlice) {
+        else
+        {
             // run until completion
             this->runtime = cpuBurst ;
         }
     } 
     else  
     {
-        if (this->cpuBurst - this->runtime > timeSlice)
+        if ((this->cpuBurst - this->runtime) > timeSlice)
         {    // it won't finish this time
             this->runtime += timeSlice;
         } 
@@ -112,10 +117,15 @@ int PCB::getTurnaround()
 {
     return turnaround;
 }
-        
+         
 void PCB::updateTurnaround()
 {
     this->turnaround = this->wait + this->cpuBurst;
+}
+
+void PCB::updateTurnaroundRR(int finishTime)
+{
+    this->turnaround = finishTime;
 }
 
 int PCB::getWait()
@@ -126,6 +136,11 @@ int PCB::getWait()
 void PCB::updateWait(int waitTime)
 {
     this->wait += waitTime;
+} 
+
+void PCB::updateWaitRR()
+{
+    this->wait = this->turnaround - this->cpuBurst;
 } 
 
 string PCB::getState() 
@@ -175,7 +190,7 @@ void PCB::setTerminated() {
 
 void PCB::displayPCB() 
 {
-    cout << "[" <<  id << "] [" <<  priority << "] [" << cpuBurst << "]";
+    cout << "[" <<  id << "] [" <<  priority << "] [" << cpuBurst - runtime << "]";
 }
 
 void PCB::displayCompletePCB() 
@@ -198,7 +213,81 @@ void Functions::show_header(string algorithm)
     cout << "\n======================================================================\n\n";
 }
 
-void Functions::run_task(PCB* p1, int time) 
+vector<PCB> Functions::createTable(string file)
+{
+    // PCB vector
+    vector<PCB> table;
+
+    // Read task name, priority and burst length from the input file 
+    string name;
+    int priority;
+    int burst;
+
+    // open the input file
+    ifstream infile(file);
+    string line;
+    
+    // check if file opened
+    if (!infile.is_open()) 
+    {
+        cerr << "Failed to open file " << file << endl; 
+        exit(1);
+    }
+    else 
+    {
+        cout << "Read from file " << file << endl << endl;
+        // each line info = PCB
+        while(getline(infile, line) ) 
+        {
+            if (!line.empty())
+            {
+                istringstream ss (line);
+
+                // Get the task name
+                getline(ss, name, ',');
+   
+                // Get the task priority 
+                string token;
+                getline(ss, token, ',');
+
+                //erase whitespaces
+                token.erase(find(token.begin(), token.end(), ' '));
+ 
+                if (Functions::check_number(token)) 
+                {
+                    // Token is a number
+                    priority = std::stoi(token);
+                } 
+                else 
+                {
+                    cerr << "Input for priority is not a number\n";
+                    exit(1);
+                }
+                // Get the task burst length 
+                getline(ss, token, ',');
+
+                token.erase(find(token.begin(), token.end(), ' '));//erase whitespaces
+
+                if (Functions::check_number(token)) 
+                {
+                    // Token is a number
+                    burst = std::stoi(token);
+                } 
+                else 
+                {
+                    cerr << "Input for CPU burst is not a number\n";
+                    exit(1);
+                }
+    
+                // Save PCB into table
+                table.push_back(PCB(name, priority, burst));    
+            }
+        }
+    }
+    return table;
+}
+
+void Functions::run_task(PCB* p1, int timeSlice) 
 {
     // set state to running
     p1->setRunning();
@@ -210,11 +299,11 @@ void Functions::run_task(PCB* p1, int time)
     p1->displayPCB();
 
     // update runtime
-    if (remainder > time) 
+    if (remainder > timeSlice) 
     {
         // run during the whole time
-        p1->updateRuntime(time);
-        cout << " for " << time << " units.\n";    
+        p1->updateRuntime(timeSlice);
+        cout << " for " << timeSlice << " units.\n";    
     } 
     else 
     {
@@ -261,3 +350,14 @@ bool Functions::compareCpuBurst (PCB* lhs, PCB* rhs)
     return lhs->getCpuBurst() < rhs->getCpuBurst();
 }
 
+bool Functions::check_number(string str)
+{ 
+    for (int i = 0; i < str.length(); i++) 
+    {   
+        if (isdigit(str[i]) == false) 
+        { 
+            return false; 
+        }
+    }
+    return true;   
+}
