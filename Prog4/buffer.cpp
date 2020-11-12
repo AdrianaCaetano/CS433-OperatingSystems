@@ -8,21 +8,16 @@
 
 #include "buffer.h"
 
-// Constructor
-Buffer::Buffer() {}
-
-// Destructor
-Buffer::~Buffer() {}
-
-
 /* Insert item into buffer
  * return 0 if sucessful, otherwise
  * return -1 indicating an error condition
  */
 int Buffer::insert_item(buffer_item item)
 {
-
-
+   //check if there is space
+   //insert item
+   //otherwise
+   //error
     return 0;
 }
 
@@ -34,8 +29,9 @@ int Buffer::insert_item(buffer_item item)
  */
 int Buffer::remove_item(buffer_item item)
 {
-
-
-
+    // check if there is an item
+    // remove item
+    // otherwise
+    // error
     return 0;
 }
