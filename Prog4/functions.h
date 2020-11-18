@@ -9,7 +9,6 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include <string>
 
 // Structure to hold parameters
 struct Parameters

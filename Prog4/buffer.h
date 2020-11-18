@@ -9,46 +9,26 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-typedef int buffer_item;
 #define BUFFER_SIZE 5
+   
+typedef int buffer_item;
 
-#include <vector>
+// Show buffer items
+void show_content();
 
-class Buffer
-{
- 
-private:
-   // buffer items
-    std::vector<buffer_item> buffer;
+/* Insert item into buffer     
+ * return 0 if sucessful, otherwise
+ * return -1 indicating an error condition
+ */
+int insert_item(buffer_item item);
 
-public:
-    // constructor
-    Buffer();
+/* Remove item from buffer
+ * placing it in item
+ * return 0 if sucessful, otherwise
+ * return -1 indicating an error condition
+ */
+int remove_item(buffer_item* item);
 
-    // Destructor
-    ~Buffer();
-
-    // Show buffer items
-    void show_content();
-
-    /* Insert item into buffer
-     * return 0 if sucessful, otherwise
-     * return -1 indicating an error condition
-     */
-    int insert_item(buffer_item item);
-
-    /* Remove item from buffer
-     * placing it in item
-     * return 0 if sucessful, otherwise
-     * return -1 indicating an error condition
-     */
-     int remove_item(buffer_item* item);
-
-     void* producer(void *param);
-
-     void* consumer(void *param);
-
-};
 
 #endif
 

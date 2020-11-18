@@ -6,33 +6,26 @@
  * File: buffer.cpp
  */
 
-#include <cstdio>   /* printf */
 #include <iostream>
-#include <stdlib.h> /* rand() */
-#include <unistd.h> /* sleep() */ 
+#include <queue>
 
 #include "buffer.h"
 
-// Constructor
-Buffer::Buffer() {}
+//int in = 0;
+//int out = 0;
 
-// Destructor
-Buffer::~Buffer() {}
+// Buffer container of buffer items
+std::queue <buffer_item> buffer;
 
 // Show content
-void Buffer::show_content()
+void show_content()
 {
-    printf("The current content of the buffer is [");
-    for (auto i : this->buffer)
-    {
-        if (i != this->buffer.back())
-        {
-            printf("%d, ", i); 
-        }
-        else 
-        { 
-            printf("%d", i);
-        }
+    printf("The current content of the buffer is [ ");
+    std::queue <buffer_item> temp_buffer = buffer;
+    while (temp_buffer.empty() == false)
+    {    
+        printf("%d ", temp_buffer.front()); 
+        temp_buffer.pop();
     }
     printf("]\n\n");
 }
@@ -41,13 +34,12 @@ void Buffer::show_content()
  * return 0 if sucessful, otherwise
  * return -1 indicating an error condition
  */
-int Buffer::insert_item(buffer_item item)
+int insert_item(buffer_item item)
 {
     //check if there is space
-    if (this->buffer.size() < BUFFER_SIZE)
+    if (buffer.size() < BUFFER_SIZE)
     { 
-        //insert item
-        this->buffer.push_back(item);
+        buffer.push(item);		//insert item
     }
     else 
     {
@@ -62,13 +54,15 @@ int Buffer::insert_item(buffer_item item)
  * return 0 if sucessful, otherwise
  * return -1 indicating an error condition
  */
-int Buffer::remove_item(buffer_item* item)
+int remove_item(buffer_item* item)
 {
+    printf("Remove item %d", item);
+ 
     // check if there is an item
-    if (this->buffer.empty() == false) 
+    if (buffer.empty() == false) 
     {
-        // remove item from the front (FIFO)
-        this->buffer.erase(this->buffer.begin());
+        *item = buffer.front();    		// get item 
+        buffer.pop();       	//remove item
     }
     else 
     { 
@@ -76,52 +70,3 @@ int Buffer::remove_item(buffer_item* item)
     }
     return 0;
 }
-
-// PThread will produce item
-void* Buffer::producer(void* param) 
-{
-    buffer_item item;
-
-    while (true) 
-    {
-        /* sleep for a random period of time */
-        sleep(rand()%10+1); // sleep beytween 1 to 10 seconds
-
-        /* generate a random number */
-        item = rand();
-
-        if (Buffer::insert_item(item))
-        {  
-             std::cerr << "ERROR: Unable to insert item " << item << ".\n";
-        }
-        else
-        {
-            printf("Item %d inserted by a producer.\n",item);
-            Buffer::show_content();
-        }
-    }
-}  
-
-
-// PThread will consume item  
-void* Buffer::consumer(void* param) 
-{
-    buffer_item item;
-
-    while (true) 
-    {
-        /* sleep for a random period of time */
-        sleep(rand()%10+1); // sleep between 1 to 10 seconds
-
-        if (Buffer::remove_item(&item))
-        {
-             std::cerr << "ERROR: unable to remove item " << &item << ".\n";
-        }
-        else
-        {
-            printf("Item %d removed by a consumer.\n",item);
-            Buffer::show_content();
-        }
-    }
-}
-  
