@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
         printf("c%d ", i);
         pthread_create(&consumers[i], NULL, consume, NULL);
     }
-    printf("\n");
+    printf("\n\n");
     
     // *****************************************************************
     // Join with terminated threads
