@@ -63,12 +63,8 @@ int main(int argc, char* argv[])
         printf("p%d ", i);
         pthread_create(&producers[i], NULL, produce, NULL);
     }
-    printf("");
+    printf("\n");
 
-    for (int i = 0; i < p.num_producers; i++)
-    {
-        pthread_join(producers[i], NULL);
-    }
 
     // 4. Create consumer thread(s)
     // *****************************************************************
@@ -84,8 +80,16 @@ int main(int argc, char* argv[])
         printf("c%d ", i);
         pthread_create(&consumers[i], NULL, consume, NULL);
     }
-    printf("");
+    printf("\n");
     
+    // *****************************************************************
+    // Join with terminated threads
+
+    for (int i = 0; i < p.num_producers; i++)
+    {
+        pthread_join(producers[i], NULL);
+    }
+
     for (int i = 0; i < p.num_consumers; i++) 
     {
         pthread_join(consumers[i], NULL);
@@ -114,7 +118,7 @@ void* produce(void* param)
     while (true) 
     {
         // sleep for a random period of time 
-        sleep(rand()%3+1); // sleep beytween 1 to 3 seconds
+        usleep(rand()%100000); // sleep up to 1 second
 
         // generate a random number 
         item = rand() % 100;
@@ -137,7 +141,7 @@ void* produce(void* param)
         pthread_mutex_unlock(&mutex);
         sem_post(&full);
     } 
-//    pthread_exit(0);
+    pthread_exit(0);
 }  
 
 // PThread will consume item  
@@ -148,7 +152,7 @@ void* consume(void* param)
     while (true) 
     {
         // sleep for a random period of time 
-        sleep(rand()%3+1); // sleep between 1 to 3 seconds
+        usleep(rand()%1000000); // sleep thread 
 
         // wait for semaphore and acquire lock
         sem_wait(&full); 
@@ -168,6 +172,6 @@ void* consume(void* param)
         pthread_mutex_unlock(&mutex);
         sem_post(&empty);
     }
-//    pthread_exit(0);
+    pthread_exit(0);
 }
 

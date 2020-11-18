@@ -56,8 +56,6 @@ int insert_item(buffer_item item)
  */
 int remove_item(buffer_item* item)
 {
-    printf("Remove item %d", item);
- 
     // check if there is an item
     if (buffer.empty() == false) 
     {
