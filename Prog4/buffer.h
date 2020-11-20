@@ -9,36 +9,26 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-typedef int buffer_item;
 #define BUFFER_SIZE 5
+   
+typedef int buffer_item;
 
-class Buffer
-{
-    private:
-        // buffer array with 5 buffer items
-        buffer_item buffer[BUFFER_SIZE];
+// Show buffer items
+void show_content();
 
-    public:
-        // Constructor
-        Buffer();
+/* Insert item into buffer     
+ * return 0 if sucessful, otherwise
+ * return -1 indicating an error condition
+ */
+int insert_item(buffer_item item);
 
-        // Destructor
-        ~Buffer();
+/* Remove item from buffer
+ * placing it in item
+ * return 0 if sucessful, otherwise
+ * return -1 indicating an error condition
+ */
+int remove_item(buffer_item* item);
 
-        /* Insert item into buffer
-         * return 0 if sucessful, otherwise
-         * return -1 indicating an error condition
-         */
-        int insert_item(buffer_item item);
-
-
-        /* Remove item from buffer
-         * placing it in item
-         * return 0 if sucessful, otherwise
-         * return -1 indicating an error condition
-         */
-        int remove_item(buffer_item item);
-};
 
 #endif
 
