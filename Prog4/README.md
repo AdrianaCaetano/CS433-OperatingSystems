@@ -26,7 +26,7 @@ microseconds.
 
 ## Extra Credits:
 You may gain extra credits for this assignment by doing more work beyond the requirements, for
-example implementingthe boundedbuffer as amonitorusingmutex andconditionvariables or other
+example implementing the bounded buffer as a monitor using mutex and condition variables or other
 things interesting or creative. The extra credit depends on the amount of extra work you do but will
 be no more than 10 points. Please clearly describe the additional work you do in the report if you
 want to claim extra credits.

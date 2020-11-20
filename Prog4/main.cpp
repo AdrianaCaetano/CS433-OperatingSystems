@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < p.num_producers; i++)
     {
         // create the threads
-        printf("p%d ", i);
+        printf("P%d ", i);
         pthread_create(&producers[i], NULL, produce, NULL);
     }
     printf("\n");
@@ -77,30 +77,18 @@ int main(int argc, char* argv[])
     for (int i = 0; i < p.num_consumers; i++) 
     {
         // create the thread
-        printf("c%d ", i);
+        printf("C%d ", i);
         pthread_create(&consumers[i], NULL, consume, NULL);
     }
     printf("\n\n");
-    
-    // *****************************************************************
-    // Join with terminated threads
 
-    for (int i = 0; i < p.num_producers; i++)
-    {
-        pthread_join(producers[i], NULL);
-    }
-
-    for (int i = 0; i < p.num_consumers; i++) 
-    {
-        pthread_join(consumers[i], NULL);
-    }
-    
     // 5. Sleep
     // *****************************************************************
     sleep(p.sleep_time);
 
     // 6. Exit
     // *****************************************************************
+    printf("Good bye!\n\n");
     exit(0);
 
     return 0;
@@ -138,10 +126,9 @@ void* produce(void* param)
         }
 
         // release lock and signal semaphore
-        pthread_mutex_unlock(&mutex);
-        sem_post(&full);
+        pthread_mutex_unlock(&mutex);	//  printf("Release producer mutex lock\n");
+        sem_post(&full);		//  printf("Signal semaphore to consumer\n");
     } 
-    pthread_exit(0);
 }  
 
 // PThread will consume item  
@@ -169,9 +156,8 @@ void* consume(void* param)
         }
 
         // release lock and signal semaphore
-        pthread_mutex_unlock(&mutex);
-        sem_post(&empty);
+        pthread_mutex_unlock(&mutex);	// printf("Release consumer mutex lock\n");
+        sem_post(&empty);		// printf("Signal semaphore to producer\n");
     }
-    pthread_exit(0);
 }
 
