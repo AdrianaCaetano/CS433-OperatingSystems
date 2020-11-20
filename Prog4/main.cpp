@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 
     // 6. Exit
     // *****************************************************************
-    printf("Good bye!\n\n");
+    printf("Goodbye!\n\n");
     exit(0);
 
     return 0;
