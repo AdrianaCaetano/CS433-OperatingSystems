@@ -28,9 +28,13 @@ page is in the main memory according to the page table. If this page is not in t
 2. In the first test, your program should read and run the simulation for a small list of logical addresses (“small_refs.txt”). Assuming an initial empty physical memory, for each logical address in the list, print out its logical page #, physical frame #, and whether it caused a page fault or not.
 
 3. In the second test, assuming an initial empty physical memory, your program should read and run the simulation for a large list of logical addresses (“large_refs.txt”), and collect and print the following statistics for different algorithms:
+
     – The total number of memory references.
+    
     – The total number of page faults.
+    
     – The total number of page replacements.
+    
     – The total time it took the simulator to produce the results.
 
 4. In addition to a program printout, your report should present and analyze the results of different replacement algorithms. You should thoroughly test your program with several different page sizes (256 - 8192 bytes) and physical memory sizes (e.g. 4 MB, 16 MB, 32 MB, 64 MB), analyze the data and summarize results and conclusions in the report.
