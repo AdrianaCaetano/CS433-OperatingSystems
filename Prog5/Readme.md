@@ -1,6 +1,4 @@
-# CS433 Programming Assignment 5
-
-## Analysis of Page Replacement Algorithms
+# Analysis of Page Replacement Algorithms
 
 For this assignment, you are to write a program to analyze different memory page replacement algorithms, assuming a single running process and a fixed size physical memory.
 
