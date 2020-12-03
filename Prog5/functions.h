@@ -9,6 +9,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#include <string>
 
 // Structure to hold parameters
 struct Parameters
@@ -16,7 +17,7 @@ struct Parameters
     int page_size;
     int physical_memory_size;
     int num_pages;
-    int num_physical_frames;
+    int num_frames;
 };
 
 // General Functions
@@ -40,6 +41,12 @@ namespace Functions
     // parse command line and save parameters into a struct
     Parameters get_parameters(int argc, char** argv);
 
+    // calculate parameters in bytes
+    void calculate_parameters(Parameters* p);
+
+    // check if x is an even number
+    bool isPowerOfTwo(int x);
 }
 
 #endif
+
