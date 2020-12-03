@@ -10,4 +10,17 @@
 #include "pagetable.h"
 
 // TODO: Add your implementation of PageTable
-~
+
+// Constructors
+PageTable::PageTable() {} 
+
+PageTable::PageTable(int size)
+{
+    page_table = new PageEntry [size];
+}
+
+// Destructor
+PageTable::~PageTable()
+{
+    delete [] page_table;
+}
