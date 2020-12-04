@@ -8,11 +8,11 @@ Your simulator should allow the page size and physical memory size (# of address
 Assume that when the simulation starts, the physical memory is empty, i.e. all page table entries are invalid. As they are brought in, the simulator should make sure that the total number of pages in memory should never exceed the physical memory size.
 The simulator should read a sequence of logical memory references from a text file. This file contains a list of virtual (logical) memory byte addresses. In this simulation, the maximum virtual memory address is 128 MB (227bytes). Remember
 
-``` 𝑝𝑎𝑔𝑒 𝑛𝑢𝑚𝑏𝑒𝑟 = 𝑙𝑜𝑔𝑖𝑐𝑎𝑙 𝑚𝑒𝑚𝑜𝑟𝑦 𝑎𝑑𝑑𝑟𝑒𝑠𝑠 𝑃𝑎𝑔𝑒 𝑠𝑖𝑧𝑒 ```
+``` 𝑝𝑎𝑔𝑒 𝑛𝑢𝑚𝑏𝑒𝑟 = 𝑙𝑜𝑔𝑖𝑐𝑎𝑙 𝑚𝑒𝑚𝑜𝑟𝑦 𝑎𝑑𝑑𝑟𝑒𝑠𝑠 / 𝑃𝑎𝑔𝑒 𝑠𝑖𝑧𝑒 ```
 
 , while page offset is irrelevant for this simulation. For example, given logical address 2000 and page size 1024,
 
-``` 2000 = 2000 = 1 𝑅 976, 1024 210 ```
+``` 2000 /1024 = 2000 / 2^10 = 1 𝑅 976 ```
 
 it has page number = 1 and page offset = 976. Since page sizes are always a power of 2, the page number can be quickly calculated using the shift operator.
 
