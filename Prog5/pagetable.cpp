@@ -67,14 +67,31 @@ void PageTable::open_file(std::string file_name, int page_size)
     std::cout << "Total number of references: " << this->page_table.size() << std::endl;
 }
 
+// ----------------------------------------------------------------------------------------------
 // Perform Test 1
 void PageTable::test1(Parameters p)
 {
    PageTable::open_file("small_refs.txt", p.page_size);
 }
 
+// ----------------------------------------------------------------------------------------------
 // Perform test 2
 void PageTable::test2(Parameters p)
 {
    PageTable::open_file("large_refs.txt", p.page_size);
+
+    std::cout << " \n*************************   Simulate FIFO replacement   *************************\n\n";
+    // TODO: Calculate number of page faults using FIFO replacement algorithm
+    // TODO: Print the statistics and run-time
+
+    std::cout << " \n************************   Simulate Random replacement   ************************\n\n";
+    // TODO: Calculate number of page faults using Random replacement algorithm
+    // TODO: Print the statistics and run-time
+
+    std::cout << " \n**************************   Simulate LRU replacement   *************************\n\n";
+    // TODO: Calculate number of page faults using LRU replacement algorithm
+    // TODO: Print the statistics and run-time
+
 }
+
+// ----------------------------------------------------------------------------------------------

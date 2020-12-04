@@ -35,16 +35,4 @@ int main(int argc, char* argv[]) {
     PageTable pageTable2;  // Create object to hold page table 2
     pageTable2.test2(p);   // Perform test 2
 
-    std::cout << " \n*************************   Simulate FIFO replacement   *************************\n\n";
-    // TODO: Add your code to calculate number of page faults using FIFO replacement algorithm
-    // TODO: print the statistics and run-time
-
-    std::cout << " \n************************   Simulate Random replacement   ************************\n\n";
-    // TODO: Add your code to calculate number of page faults using Random replacement algorithm
-    // TODO: print the statistics and run-time
-
-    std::cout << " \n**************************   Simulate LRU replacement   *************************\n\n";
-    // TODO: Add your code to calculate number of page faults using LRU replacement algorithm
-    // TODO: print the statistics and run-time
 }
-                                                                19,2          All
