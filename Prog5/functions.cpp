@@ -130,6 +130,7 @@ Parameters Functions::get_parameters(int argc, char** argv)
     std::cout << "Physical Memory size = " << p.physical_memory_size << " bytes" << std::endl;
     std::cout << "Number of pages = " << p.num_pages << std::endl;
     std::cout << "Number of physical frames = " << p.num_frames << std::endl;
+    std::cout << "Page Table Size = " << p.page_table_size << std::endl;
 
     return p;
 }
@@ -158,6 +159,20 @@ void Functions::calculate_parameters(Parameters* p)
     // Number of free frames in physical memory = 2^(phys_mem_bits - page_offset_bits)
     p->num_frames = 1 << (phys_mem_bits - page_offset_bits);
 
+    // max size of virtual memory is 128MB
+    //convert virtual memory size from MB to bytes (= 2^20)
+    int max_virtual = 128 << 20;
+
+    // max page table size
+    int max_table_sz = max_virtual / p->page_size;
+    if (p->num_pages < max_table_sz) 
+    { 
+        p->page_table_size = p->num_pages;
+    } 
+    else 
+    { 
+        p->page_table_size = max_table_sz;
+    }
 }
 
 // Check if an integer is power of 2

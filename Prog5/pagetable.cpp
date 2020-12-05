@@ -6,6 +6,7 @@
  * File: pagetable.cpp
  */
 
+#include <array>
 #include <fstream> // file
 #include <iostream>
 #include <stack>
@@ -19,19 +20,44 @@
 // Constructors
 PageTable::PageTable() {}
 
+PageTable::PageTable(int size)
+{
+    this->size = size;
+    this->page_table = new PageEntry* [this->size];
+}
+
+PageTable::PageTable(int page_size, int num_pages)
+{
+    // max size of virtual memory is 128MB
+    //convert virtual memory size from MB to bytes (= 2^20)
+    int max_virtual = 128 << 20;
+
+    // max page table size
+    int max_table_sz = max_virtual / page_size;
+
+    if (num_pages < max_table_sz) 
+    { 
+        this->size = num_pages;
+    } 
+    else 
+    { 
+        this->size = max_table_sz;
+    }
+//    std::cout << "Page Table size = " << this->size << std::endl;
+    this->page_table = new PageEntry*[this->size];
+}
+
+
 // Destructor
 PageTable::~PageTable()
 {
-    while (!page_table.empty())
-    {
-        page_table.pop();
-    }
+    delete [] page_table;
 }
 
 // Return the size of the page table
 int PageTable::get_size()
 {
-    return int(this->page_table.size());
+    return this->size;
 }
 
 // Open file, read logical address, create a page entry, and populate the table        
@@ -53,18 +79,28 @@ void PageTable::open_file(std::string file_name, int page_size)
     std::string input;
     int refAddress;
     int page_number;
+    int references = 0;
 
     while (fin >> input)
     {
         refAddress = std::stoi(input);
         page_number = refAddress / page_size;
         PageEntry entry = PageEntry(refAddress,page_number);
-        this->page_table.push(&entry);
+        if ( references < PageTable::get_size() )
+        {      
+            this->page_table[references] = &entry;
+            references++;
+        } 
+        else 
+        { 
+            std::cout << "Reached max page table size\n";
+            exit(0);
+        }
     }
 
     fin.close(); // close file
 
-    std::cout << "Total number of references: " << this->page_table.size() << std::endl;
+    std::cout << "Total number of references: " << references << std::endl;
 }
 
 // ----------------------------------------------------------------------------------------------

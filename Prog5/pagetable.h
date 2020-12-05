@@ -9,7 +9,7 @@
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
-#include <stack>
+#include <array>
 #include <string>
 
 #include "functions.h"
@@ -46,11 +46,14 @@ struct PageEntry
 class PageTable
 {
     private:
-        std::stack <PageEntry*> page_table;
+        int size;   // 32 MB = max virtual memory (128MB) / min page size (4MB)
+        PageEntry** page_table;
 
     public:
         // Constructors
         PageTable();
+        PageTable(int size);
+        PageTable(int page_size, int num_pages);
 
         // Destructor
         ~PageTable();

@@ -18,6 +18,7 @@ struct Parameters
     int physical_memory_size;
     int num_pages;
     int num_frames;
+    int page_table_size;
 };
 
 // General Functions
