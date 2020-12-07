@@ -7,9 +7,9 @@
  */
 
 #include <array>
+#include <chrono> // timer
 #include <fstream> // file
 #include <iostream>
-#include <stack>
 #include <string>
 
 #include "functions.h"
@@ -22,8 +22,9 @@ PageTable::PageTable() {}
 
 PageTable::PageTable(int size)
 {
-    this->size = size;
-    this->page_table = new PageEntry* [this->size];
+    this->size = size;  // max array size
+    this->count = 0;    // num elements in the  array
+    this->page_table = new PageEntry [this->size];
 }
 
 PageTable::PageTable(int page_size, int num_pages)
@@ -43,10 +44,9 @@ PageTable::PageTable(int page_size, int num_pages)
     { 
         this->size = max_table_sz;
     }
-//    std::cout << "Page Table size = " << this->size << std::endl;
-    this->page_table = new PageEntry*[this->size];
+    this->count = 0;
+    this->page_table = new PageEntry[this->size];
 }
-
 
 // Destructor
 PageTable::~PageTable()
@@ -55,13 +55,32 @@ PageTable::~PageTable()
 }
 
 // Return the size of the page table
-int PageTable::get_size()
+int PageTable::get_max_size()
 {
+    // max capacity
     return this->size;
 }
 
+// Return number of saved entries
+int PageTable::get_count()
+{
+    // total number of elements in the table
+    return this->count;
+}
+
+void PageTable::print()
+{
+    std::cout << "PageTable with " << this->count << " page entries.\n";
+    for (auto it = 0; it < this->count; it++)
+    {
+        // print each entry
+        this->page_table[it].print_entry();
+        std::cout << std::endl;
+    }
+}
+
 // Open file, read logical address, create a page entry, and populate the table        
-void PageTable::open_file(std::string file_name, int page_size)
+void PageTable::open_file(std::string file_name, Parameters p)
 {
     std::ifstream fin;
     fin.open(file_name, std::ifstream::in); // open file
@@ -78,43 +97,66 @@ void PageTable::open_file(std::string file_name, int page_size)
 
     std::string input;
     int refAddress;
-    int page_number;
     int references = 0;
+    std::cout << "Save into table\n";
 
     while (fin >> input)
     {
+        references++;
         refAddress = std::stoi(input);
-        page_number = refAddress / page_size;
-        PageEntry entry = PageEntry(refAddress,page_number);
-        if ( references < PageTable::get_size() )
-        {      
-            this->page_table[references] = &entry;
-            references++;
-        } 
-        else 
-        { 
-            std::cout << "Reached max page table size\n";
-            exit(0);
-        }
+        PageTable::save_to_table(refAddress, p);
     }
 
     fin.close(); // close file
 
-    std::cout << "Total number of references: " << references << std::endl;
+    PageTable::print();
+    
+    std::cout << "\nTotal number of references: " << references << std::endl;
 }
+
+
+// Save entry into PageTable
+void PageTable::save_to_table(int logical_add, Parameters p)
+{
+    if (this->count < this->size)
+    {
+        for (auto it = 0; it < this->count; it++)
+        { 
+            // Check if it's already in the table   
+            if (this->page_table[it].logical_add == logical_add) 
+            {  
+                return; // address found, don't save it
+            }
+        }
+        // Save a new PageEntry into the table
+        int page_number = logical_add / p.page_size;
+        this->page_table[this->count] = PageEntry(logical_add, page_number);
+        this->count++; // update table count
+    } 
+    else 
+    { 
+        std::cout << "Reached max page table size\n";
+        exit(0);
+    }
+}
+
 
 // ----------------------------------------------------------------------------------------------
 // Perform Test 1
 void PageTable::test1(Parameters p)
 {
-   PageTable::open_file("small_refs.txt", p.page_size);
+    PageTable::open_file("small_refs.txt", p);
+//    PageTable::print();
 }
 
 // ----------------------------------------------------------------------------------------------
 // Perform test 2
 void PageTable::test2(Parameters p)
 {
-   PageTable::open_file("large_refs.txt", p.page_size);
+    std::cout << "Start timer for Test 2\n\n";
+    auto start = std::chrono::steady_clock::now();
+
+//   PageTable::open_file("large_refs.txt", p);
 
     std::cout << " \n*************************   Simulate FIFO replacement   *************************\n\n";
     // TODO: Calculate number of page faults using FIFO replacement algorithm
@@ -128,6 +170,9 @@ void PageTable::test2(Parameters p)
     // TODO: Calculate number of page faults using LRU replacement algorithm
     // TODO: Print the statistics and run-time
 
+    auto end = std::chrono::steady_clock::now(); //end time measument for test 2
+    std::chrono::duration<double> elapsed_seconds = end - start;	
+    std::cout << "\nTest 2 runtime = " << elapsed_seconds.count() << " seconds\n\n";
 }
 
 // ----------------------------------------------------------------------------------------------

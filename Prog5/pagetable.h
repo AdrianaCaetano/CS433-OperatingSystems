@@ -10,6 +10,7 @@
 #define PAGETABLE_H
 
 #include <array>
+#include <stdio.h> //printf()
 #include <string>
 
 #include "functions.h"
@@ -30,11 +31,25 @@ struct PageEntry
 
     // Contructor
     PageEntry() {};
+    PageEntry(int logical)
+    {
+        logical_add = logical;
+        page_num = 0;
+        frame_num = 0; 
+    }
     PageEntry(int logical, int page)
     {
         logical_add = logical;
         page_num = page;
         frame_num = 0;
+    }
+
+    // Useful functions
+    void print_entry()
+    {
+        printf("Logical Address: %11d,", logical_add); 
+        printf("Page Number: %8d,", page_num); 
+        printf("Frame Number: %4d,", frame_num); 
     }
 };
 
@@ -46,8 +61,9 @@ struct PageEntry
 class PageTable
 {
     private:
-        int size;   // 32 MB = max virtual memory (128MB) / min page size (4MB)
-        PageEntry** page_table;
+        int size;   // max capacity 32 MB = max virtual memory (128MB) / min page size (4MB)
+        int count;  // number of entries in this table
+        PageEntry* page_table;
 
     public:
         // Constructors
@@ -58,11 +74,20 @@ class PageTable
         // Destructor
         ~PageTable();
 
-        // Return the size of the page table
-        int get_size();
+        // Return the max capacity size of the page table
+        int get_max_size();
 
-        // Open file, read logical address, return a page entry
-        void open_file(std::string file_name, int page_size);
+        // Return the actual size of the page table
+        int get_count();
+
+        // Open file, read the logical address, return the logical address
+        void open_file(std::string file_name, Parameters p);
+
+        // Save entry into PageTable
+        void save_to_table(int logical_add, Parameters p);
+
+        // Print all entries of this table
+        void print();
 
         /* Perform test 1
          * In the first test, your program should read and run the simulation for a small list 

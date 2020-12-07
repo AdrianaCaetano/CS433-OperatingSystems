@@ -130,7 +130,6 @@ Parameters Functions::get_parameters(int argc, char** argv)
     std::cout << "Physical Memory size = " << p.physical_memory_size << " bytes" << std::endl;
     std::cout << "Number of pages = " << p.num_pages << std::endl;
     std::cout << "Number of physical frames = " << p.num_frames << std::endl;
-    std::cout << "Page Table Size = " << p.page_table_size << std::endl;
 
     return p;
 }
