@@ -158,6 +158,20 @@ void Functions::calculate_parameters(Parameters* p)
     // Number of free frames in physical memory = 2^(phys_mem_bits - page_offset_bits)
     p->num_frames = 1 << (phys_mem_bits - page_offset_bits);
 
+    // max size of virtual memory is 128MB
+    //convert virtual memory size from MB to bytes (= 2^20)
+    int max_virtual = 128 << 20;
+
+    // max page table size
+    int max_table_sz = max_virtual / p->page_size;
+    if (p->num_pages < max_table_sz) 
+    { 
+        p->page_table_size = p->num_pages;
+    } 
+    else 
+    { 
+        p->page_table_size = max_table_sz;
+    }
 }
 
 // Check if an integer is power of 2
