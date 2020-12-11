@@ -10,12 +10,13 @@
 #define PAGETABLE_H
 
 #include <array>
+#include <fstream>
 #include <list>
 #include <stdio.h> //printf()
 #include <string>
+#include <vector>
 
 #include "functions.h"
-
 
 // -------------------------- Page Entry ----------------------------------
 
@@ -34,38 +35,10 @@ struct PageEntry
     bool dirty = false;
 
     // Contructor
-    PageEntry() {};
-    PageEntry(int logical)
-    {
-        logical_add = logical;
-        page_num = 0;
-        frame_num = 0; 
-    }
-    PageEntry(int logical, int page)
-    {
-        logical_add = logical;
-        page_num = page;
-        frame_num = 0;
-    }
+     PageEntry(): logical_add(0), page_num(0), frame_num(0) {} 
 
-    PageEntry(int logical, int page, int frame)
-    {
-        logical_add = logical;
-        page_num = page;
-        frame_num = frame;
-    }
+     PageEntry(int page): logical_add(0), page_num(page), frame_num(0) {} 
 
-
-    // ------------------------- Page Entry Useful functions ---------------------------
-    // Print Page entry information
-    void print_entry()
-    {
-        printf("Logical Address: %10d,  ", logical_add); 
-        printf("Page Number: %7d,  ", page_num); 
-        printf("Frame Number: %3d,  ", frame_num); 
-        printf("Page Fault? %s", valid ? "No" : "Yes");
-    }
-    
 };
 
 // ---------------------------- Page Table ---------------------------------
@@ -85,34 +58,28 @@ class PageTable
         // Constructors
         PageTable();
         PageTable(int size);
-        PageTable(int page_size, int num_pages);
-        PageTable(Parameters p);
 
         // Destructor
         ~PageTable();
 
         // -------------------- Page Table Useful Functions ----------------------------
+        // Open file
+        std::vector<int> open_file(std::string file_name);
 
-        // Return the max capacity size of the page table
-        int get_max_size();
+        // Print page info
+        void print_page(int log_add, int page_num, int fram_num, bool valid);
 
-        // Return the actual size of the page table
-        int get_count();
-
-        // Return the index of the page entry on the table
-        int get_index(int log_add);
-
-        // Open file, read the logical address
-        void open_file(std::string file_name, Parameters p);
-
-        // Save entry into PageTable
-        void save_to_table(int logical_add, Parameters p);
-
-        // Print all entries of this table
-        void print();
+        // Print test statistics
+        void print_stats(int ref, int p_fault, int p_replace);
 
         // ----------------------------- Replacement Algorithms ----------------------------
-        void fifo(int index, int &frame, int free_frames, int &page_faults, std::list<PageEntry*> &list);
+        void fifo(int index, int &frame, int free_frames, int &page_faults, 
+		int &page_replace, std::list<int> &list);
+
+        void random(int index, int &frame, int free_frames, int &page_faults, int &page_replace);
+
+        void lru(int index, int &frame, int free_frames, int &page_faults, 
+		int &page_replace, std::list<int> &list);
 
         // ------------------------------------ Tests -------------------------------------
 
