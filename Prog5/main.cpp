@@ -22,7 +22,9 @@ int main(int argc, char* argv[]) {
     // Get and Validate parameters from cmd
     Parameters p = Functions::get_parameters(argc, argv);
 
-    PageTable pageTable(p);
+    PageTable pageTable(p.page_table_size);
+    //pageTable.set_table_pages(p);
+
 
     // Test 1: Read and simulate the small list of logical addresses from the input file "small_refs.txt"
     std::cout <<"\n====================================  Test 1  ====================================\n\n";
