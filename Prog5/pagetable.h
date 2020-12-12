@@ -65,6 +65,9 @@ class PageTable
         // Open file
         std::vector<int> open_file(std::string file_name);
 
+        // Reset all pages in the table
+        void reset_table();
+
         // Print page info
         void print_page(int log_add, int page_num, int fram_num, bool fault);
 

@@ -86,6 +86,17 @@ std::vector<int> PageTable::open_file(std::string file_name)
     return file_references;
 }
 
+// Reset all pages in the table
+void PageTable::reset_table()
+{
+    for (auto page = 0; page < this->size; page++)
+    { 
+        page_table[page].valid = false;
+        page_table[page].logical_add = 0;
+        page_table[page].frame_num = 0;
+    }
+}
+
 // Print page info
 void PageTable::print_page(int log_add, int page_num, int frame_num, bool fault)
 { 
@@ -118,7 +129,7 @@ void PageTable::fifo(int index, std::list<int> &list)
     page_table[victim].valid = false;   		// change victim valid bit to false
     int new_free_frame = page_table[victim].frame_num;  // get victim frame number
         
-    // Save new page on the list
+    // Save new page on the list and update it
     list.push_front(index);
     page_table[index].frame_num = new_free_frame; 	// set the newly freed frame to the new page
     page_table[index].valid = true; 		// change valid bit of the new page 
@@ -147,22 +158,22 @@ void PageTable::random(int index)
 void PageTable::lru(int index, std::list<int> &list)
 {
     int victim;
-    if (!list.empty())
+//    if (!list.empty())
     {
-        std::cout << "** Find a victim: ";
+//        std::cout << "** Find a victim: ";
         victim = list.back();	// get the least used page to be the victim
 //        std::cout << "** Remove victim from LRU list\n";
         list.pop_back();        // remove victim from lru list
-        std::cout << victim;
+//        std::cout << victim;
 
-        std::cout << " ** Update victim parameters\n";
+//        std::cout << " ** Update victim parameters ";
         int free_frame = page_table[victim].frame_num; // get frame from victim
         page_table[victim].valid = false;
  
-        std::cout << " ** Update new page " << index << std::endl;;
+//        std::cout << " ** Update new page " << index << std::endl;;
         page_table[index].frame_num = free_frame;
         page_table[index].valid = true;
-        
+        list.push_front(index);       // include this page in the list       
     }   
 }
 
@@ -218,6 +229,7 @@ void PageTable::test1(std::string file_name, Parameters p)
     std::cout << std::endl;
     PageTable::print_stats(references, page_faults, page_replace);
     list_pages.clear();
+    PageTable::reset_table();
 }
 
 // ---------------------------------------- TEST 2 ---------------------------------------------
@@ -292,6 +304,7 @@ void PageTable::test2(std::string file_name, Parameters p)
     frame = 0; 		// frame counter
     page_faults = 0;	// page faults counter
     page_replace = 0; 	// page repacement counter
+    PageTable::reset_table();
 
     // Start timer for Random algorithm
     auto startRandom = std::chrono::steady_clock::now();
@@ -344,6 +357,7 @@ void PageTable::test2(std::string file_name, Parameters p)
     page_faults = 0;	// page faults counter
     page_replace = 0; 	// page repacement counter
     list.clear();	// hold lru order of pages
+    PageTable::reset_table();
 
     // Start timer for Random algorithm
     auto startLRU = std::chrono::steady_clock::now();
@@ -354,40 +368,40 @@ void PageTable::test2(std::string file_name, Parameters p)
         page_index = refAddress / p.page_size;
         references++;
         
-        std::cout << "Log add = " << refAddress << " Page = " << page_index;
+//        std::cout << "Logical = " << refAddress << " Page = " << page_index;
+//        std::cout << "Reference = " << refAddress  << std::endl;
 
         if (page_table[page_index].valid == true)
         { 
             // page is already loaded into memory
-            std::cout << " Find the page in the LRU list: ";
-   //         auto it = std::find(list.cbegin(), list.cend(), page_index);
+   //         std::cout << " Find the page in the LRU list: ";
    //
-            for (auto it = list.begin(); it != list.end(); )
+            for (auto it = list.begin(); it != list.end(); it++)
             {          
                 if (*it == page_index)
                 {
-                    std::cout << " It's a hit. ";
+     //               std::cout << " It's a hit. ";
                     //  Move page to the front of the list
                     list.erase(it);
-                    std::cout << "Removed" ;
+//                    std::cout << "Removed" ;
                     list.push_front(page_index);
-                    std::cout << " and placed in front\n";
+//                    std::cout << " and placed in front\n";
                     break;   // Found! Go to the next in the list
                 }
             }
-            std::cout << "Out of for loop\n";
+       //     std::cout << "Out of for loop\n";
            continue;
-//            std::cout << "ERROR: It's not in the list\n";
+       //     std::cout << "ERROR: It's not in the list\n";
         }
         else 
         {
-            std::cout << " It's a miss. Page fault!";
+       //     std::cout << " It's a miss. Page fault!";
             page_faults++;	// this is a page fault, update counter   
 
             // Check if there are free frames
             if (frame <= p.num_frames) 
             {
-                std::cout << " Get a free frame.\n";
+       //         std::cout << " Get a free frame.\n";
                 // Insert page in the LRU list
                 page_table[page_index].frame_num = frame; 	// get a free frame and set it to page
                 page_table[page_index].valid = true; 		// change page valid bit
@@ -396,14 +410,14 @@ void PageTable::test2(std::string file_name, Parameters p)
             }
             else 
             {   
-              std::cout << " Replace page\n";
+ //             std::cout << " Replace page\n";
                 page_replace++;		//update page replacement counter
                 PageTable::lru(page_index, list);
             }
         }
-        std::cout << "Get next reference\n";
+ //       std::cout << "Get next reference\n";
     }
-    std::cout << "Out of while loop\n";
+//    std::cout << "Out of while loop\n";
  
     auto endLRU = std::chrono::steady_clock::now(); //end time measument for Random Algorithm
     std::chrono::duration<double> elapsed_seconds_LRU = endLRU - startLRU;
