@@ -9,6 +9,7 @@
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
+#include <algorithm> //find
 #include <array>
 #include <fstream>
 #include <list>
@@ -31,8 +32,6 @@ struct PageEntry
     int frame_num;
     // valid bit represents whether a page is in the physical memory
     bool valid = false;
-    // dirty bit represents whether a page is changed
-    bool dirty = false;
 
     // Contructor
      PageEntry(): logical_add(0), page_num(0), frame_num(0) {} 
@@ -67,19 +66,17 @@ class PageTable
         std::vector<int> open_file(std::string file_name);
 
         // Print page info
-        void print_page(int log_add, int page_num, int fram_num, bool valid);
+        void print_page(int log_add, int page_num, int fram_num, bool fault);
 
         // Print test statistics
         void print_stats(int ref, int p_fault, int p_replace);
 
         // ----------------------------- Replacement Algorithms ----------------------------
-        void fifo(int index, int &frame, int free_frames, int &page_faults, 
-		int &page_replace, std::list<int> &list);
+        void fifo(int index, std::list<int> &list);
 
-        void random(int index, int &frame, int free_frames, int &page_faults, int &page_replace);
+        void random(int index);
 
-        void lru(int index, int &frame, int free_frames, int &page_faults, 
-		int &page_replace, std::list<int> &list);
+        void lru(int index, std::list<int> &list);
 
         // ------------------------------------ Tests -------------------------------------
 

@@ -6,10 +6,10 @@
  * File: pagetable.cpp
  */
 
-#include <algorithm>
+// #include <algorithm>	// find()
 #include <array>
-#include <chrono> // timer
-#include <fstream> // file
+#include <chrono> 	// timer
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <string>
@@ -87,12 +87,12 @@ std::vector<int> PageTable::open_file(std::string file_name)
 }
 
 // Print page info
-void PageTable::print_page(int log_add, int page_num, int frame_num, bool valid)
+void PageTable::print_page(int log_add, int page_num, int frame_num, bool fault)
 { 
     printf("Logical Address: %10d,  ", log_add);  
     printf("Page Number: %7d,  ", page_num); 
     printf("Frame Number: %3d,  ", frame_num); 
-    printf("Page Fault? %s", valid ? "No" : "Yes");
+    printf("Page Fault? %4s  ", fault ? "No" : "Yes");
     printf("\n");
 }
 
@@ -107,112 +107,62 @@ void PageTable::print_stats(int ref, int p_fault, int p_replace)
 
 // ------------------------------- REPLACEMENT ALGORITHMS ----------------------------------
 //
-// FIFO algorithm: replace the first loaded page 
-void PageTable::fifo(int index, int &frame, int free_frames, int &page_faults,
-		int &page_replace, std::list<int> &list) 
+// FIFO algorithm: replace the first loaded page ------------------------------------------- 
+void PageTable::fifo(int index, std::list<int> &list) 
 {
-    page_faults++;	// this is a page fault   
     int victim;         // to hold victim page
 
-    // Check if there are free frames
-    if (frame <= free_frames) 
-    {
-        page_table[index].frame_num = frame; 	// get a free frame and set it to page
-        page_table[index].valid = true; 	// change page valid bit
-        frame++;  				// increment frame count 
-        list.push_back(index);			// insert page at the end
-    }
-    else
-    {   
-        // Choose the first page in the list to be removed = victim
-        victim = list.front();				// save victim page_num
-        list.pop_front(); 				// remove the first page in the list
-        page_table[victim].valid = false;   		// change page entry valid bit
-        page_table[victim].dirty = true;     		// change page entry dirty bit
-        int new_free_frame = page_table[victim].frame_num;  // get this page frame number
-        page_replace++;					// increment page replacement counter
+    // Choose the first page in the list to be removed = victim
+    victim = list.back();				// save victim page_num
+    list.pop_back(); 				// remove the first page in the list
+    page_table[victim].valid = false;   		// change victim valid bit to false
+    int new_free_frame = page_table[victim].frame_num;  // get victim frame number
         
-        // Save new page to the back of the list
-        list.push_back(index);		
-	page_table[index].frame_num = new_free_frame; 	// set the newly freed frame to the new page
-        page_table[index].valid = true; 		// change valid bit of the new page 
-    } 
+    // Save new page on the list
+    list.push_front(index);
+    page_table[index].frame_num = new_free_frame; 	// set the newly freed frame to the new page
+    page_table[index].valid = true; 		// change valid bit of the new page 
 } 
 
-// RANDOM algorithm: choose a random page to be replaced 
-void PageTable::random(int index, int &frame, int free_frames, int &page_faults, int &page_replace)
+// RANDOM algorithm: choose a random page to be replaced --------------------------------------
+void PageTable::random(int index)
 {
     int victim;
-    page_faults++;	// this is a page fault   
-
-    // Check if there are free frames
-    if (frame <= free_frames) 
+    do 
     {
-        page_table[index].frame_num = frame; 	// get a free frame and set it to page
-        page_table[index].valid = true; 	// change page valid bit
-        frame++;  				//increment frame count 
-    }
-    else 
-    {
-        do 
-        {
-           victim = rand() % this->size;// choose a random page to be the victim
-        } while (!page_table[victim].valid); 	// check if it is loaded into memory
+       victim = rand() % this->size;		// choose a random page to be the victim
+    } while (!page_table[victim].valid); 	// check if it is loaded into memory
 
-        //update victim parameters
-        int free_frame = page_table[victim].frame_num; // get frame from victim
-        page_table[victim].valid = false;
-        page_table[victim].dirty = true;
+    //update victim parameters
+    int free_frame = page_table[victim].frame_num; // get frame from victim
+    page_table[victim].valid = false;
         
-        // update new page
-        page_table[index].frame_num = free_frame;
-        page_table[index].valid = true;
-        
-        page_replace++;   // increment counter
-    }   
+    // update new page
+    page_table[index].frame_num = free_frame;
+    page_table[index].valid = true;
 }
 
 
-// LRU algorithm
-void PageTable::lru(int index, int &frame, int free_frames, int &page_faults, 
-		int &page_replace, std::list<int> &list)
+// LRU algorithm: Replace the least recently used page -------------------------------- 
+void PageTable::lru(int index, std::list<int> &list)
 {
     int victim;
-    page_faults++;	// this is a page fault, update counter   
-
-//    std::cout << "** Replace page\n";
-
-    // Check if there are free frames
-    if (frame <= free_frames) 
+    if (!list.empty())
     {
-//        std::cout << "** Insert page in the LRU list\n";
-        page_table[index].frame_num = frame; 	// get a free frame and set it to page
-        page_table[index].valid = true; 	// change page valid bit
-        frame++;  				// increment frame count
-        list.push_front(index);			// include this page in the LRU list 
-    }
-    else 
-    {   
-        if (!list.empty())
-        {
-//            std::cout << "** Find a victim\n";
-            victim = list.back();	// get the least used page to be the victim
-//            std::cout << "** Remove victim from LRU list\n";
-            list.pop_back();        // remove victim from lru list
+//        std::cout << "** Find a victim\n";
+        victim = list.back();	// get the least used page to be the victim
+//        std::cout << "** Remove victim from LRU list\n";
+        list.pop_back();        // remove victim from lru list
 
-//            std::cout << "** Update victim parameters\n";
-            int free_frame = page_table[victim].frame_num; // get frame from victim
-            page_table[victim].valid = false;
-            page_table[victim].dirty = true;
+//        std::cout << "** Update victim parameters\n";
+        int free_frame = page_table[victim].frame_num; // get frame from victim
+        page_table[victim].valid = false;
+ 
+//        std::cout << "** Update new page\nu;
+        page_table[index].frame_num = free_frame;
+        page_table[index].valid = true;
         
-//            std::cout << "** Update new page\nu;
-            page_table[index].frame_num = free_frame;
-            page_table[index].valid = true;
-        
-            page_replace++;   // increment counter
-        }
     }   
-
 }
 
 
@@ -237,16 +187,32 @@ void PageTable::test1(std::string file_name, Parameters p)
         page_index = refAddress / p.page_size;
         references++;
 
-
         if (page_table[page_index].valid == true)
-        { 
-            // page is already loaded into memory
-            PageTable::print_page(refAddress, page_index, page_table[page_index].frame_num, true);  	// print page
+        {
+            // Page is already loaded into memory, not a page fault. Print page
+            PageTable::print_page(refAddress, page_index, page_table[page_index].frame_num, true);
             continue;
         }
-        // replace page
-        PageTable::fifo(page_index, frame, p.num_frames, page_faults, page_replace, list_pages);       
-        PageTable::print_page(refAddress, page_index, page_table[page_index].frame_num, false);
+        else 
+        {
+            // This is a page fault
+            page_faults++;		// increment page faults
+            // Check if there are free frames
+            if (frame <= p.num_frames) 
+            {
+                // Load page into memory using a free frame, change valid_bit, push into the list
+                page_table[page_index].frame_num = frame; 	// get a free frame and set it to page 
+                page_table[page_index].valid = true; 		// change page valid bit to true
+                frame++;  					// increment frame count 
+                list_pages.push_front(page_index);		// insert page on the list
+            }
+            else
+            {    // Replace the page
+                 page_replace++;	// increment page replacement counter
+                 PageTable::fifo(page_index, list_pages);       
+            }
+            PageTable::print_page(refAddress, page_index, page_table[page_index].frame_num, false);
+        }
     }
     std::cout << std::endl;
     PageTable::print_stats(references, page_faults, page_replace);
@@ -257,7 +223,7 @@ void PageTable::test1(std::string file_name, Parameters p)
 // Perform test 2
 void PageTable::test2(std::string file_name, Parameters p)
 {
-    std::cout << "Start timer for Test 2\n\n";
+    std::cout << "Start timer for Test 2\n";
     auto start = std::chrono::steady_clock::now();
 
     std::vector<int> large_input = PageTable::open_file("large_refs.txt");
@@ -286,11 +252,29 @@ void PageTable::test2(std::string file_name, Parameters p)
         { 
             // page is already loaded into memory
             continue;
+        } 
+        else 
+        {
+            page_faults++;	// this is a page fault   
+        
+            // Check if there are free frames
+            if (frame <= p.num_frames) 
+            {
+                // Load page into memory using a free frame, change valid_bit, push into the list
+                page_table[page_index].frame_num = frame; 	// get a free frame and set it to page 
+                page_table[page_index].valid = true; 	// change page valid bit to true
+                frame++;  				// increment frame count 
+                list.push_front(page_index);			// insert page on the list
+            }
+            else
+            {
+                // replace page
+                page_replace++;
+                PageTable::fifo(page_index, list);       
+            }
         }
-        // replace page
-        PageTable::fifo(page_index, frame, p.num_frames, page_faults, page_replace, list);       
     }
-    
+ 
     auto endFIFO = std::chrono::steady_clock::now(); //end time measument for test 2
     std::chrono::duration<double> elapsed_seconds_FIFO = endFIFO - startFIFO;
 	
@@ -321,9 +305,25 @@ void PageTable::test2(std::string file_name, Parameters p)
         { 
             // page is already loaded into memory
             continue;
+        } 
+        else 
+        {        
+            page_faults++;	// this is a page fault   
+
+            // Check if there are free frames
+            if (frame <= p.num_frames) 
+            {
+                page_table[page_index].frame_num = frame; 	// get a free frame and set it to page
+                page_table[page_index].valid = true;	 	// change page valid bit
+                frame++;  					//increment frame count 
+            }
+            else 
+            {
+                // replace page
+                page_replace++;
+                PageTable::random(page_index);
+            }
         }
-        // replace page
-        PageTable::random(page_index, frame, p.num_frames, page_faults, page_replace);       
     }
  
     auto endRandom = std::chrono::steady_clock::now(); //end time measument for Random Algorithm
@@ -342,7 +342,7 @@ void PageTable::test2(std::string file_name, Parameters p)
     frame = 0; 		// frame counter
     page_faults = 0;	// page faults counter
     page_replace = 0; 	// page repacement counter
-    list.clear();	// hold lru oreder of pages
+    list.clear();	// hold lru order of pages
 
     // Start timer for Random algorithm
     auto startLRU = std::chrono::steady_clock::now();
@@ -356,19 +356,41 @@ void PageTable::test2(std::string file_name, Parameters p)
         if (page_table[page_index].valid == true)
         { 
             // page is already loaded into memory
-//            std::cout << "__ Find the page in the LRU list and bring it to the front\n";
-            auto it = std::find(list.begin(), list.end(), page_index);
-            if (it != list.end())
+//            std::cout << "__ Find the page in the LRU list\n";
+            auto it = std::find(list.cbegin(), list.cend(), page_index);
+            if (it == list.end())
             {
-//               std::cout << "__ Remove page from LRU list\n";
-                list.erase(it);   // remove from middle
+                 std::cout << "ERROR: It's not in the list\n";
+                 continue;
             }
-//            std::cout << "__ Bring page to the front\n";
-            list.push_front(page_index); // bring to front
-            continue;
+            else 
+            {
+                // It's a hit. Move to the front of the list
+                list.erase(it);
+                list.push_front(page_index);
+                continue;
+            }
         }
-//        std::cout << "__ Replace page\n";
-        PageTable::lru(page_index, frame, p.num_frames, page_faults, page_replace, list);
+        else 
+        {
+            page_faults++;	// this is a page fault, update counter   
+
+            // Check if there are free frames
+            if (frame <= p.num_frames) 
+            {
+//              std::cout << "** Insert page in the LRU list\n";
+                page_table[page_index].frame_num = frame; 	// get a free frame and set it to page
+                page_table[page_index].valid = true; 		// change page valid bit
+                frame++;  					// increment frame count
+                list.push_front(page_index);			// include this page in the LRU list 
+            }
+            else 
+            {   
+//              std::cout << "__ Replace page\n";
+                page_replace++;		//update page replacement counter
+                PageTable::lru(page_index, list);
+            }
+        }
     }
  
     auto endLRU = std::chrono::steady_clock::now(); //end time measument for Random Algorithm

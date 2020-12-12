@@ -8,8 +8,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
+#include <ctime> 
 #include <vector>
 
 #include "functions.h"
@@ -22,15 +23,16 @@ int main(int argc, char* argv[]) {
     // Get and Validate parameters from cmd
     Parameters p = Functions::get_parameters(argc, argv);
 
+    // Create a page table with page entries
     PageTable pageTable(p.page_table_size);
-    //pageTable.set_table_pages(p);
 
-
+    // Use current time as seed to random generator 
+    std::srand(std::time(nullptr));
+ 
     // Test 1: Read and simulate the small list of logical addresses from the input file "small_refs.txt"
     std::cout <<"\n====================================  Test 1  ====================================\n\n";
     // Test 1 prints out logical page #, frame # and whether page fault for each logical address
 
-//    PageTable pageTable1(p.page_size, p.num_pages);  // Create object to hold page table 1
     pageTable.test1("small_refs.txt", p);   // Perform test 1
 
     // Test 2: Read and simulate the large list of logical addresses from the input file "large_refs.txt"
